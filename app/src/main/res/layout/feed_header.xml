@@ -66,10 +66,7 @@
                             android:background="@drawable/list_background" />
                     </LinearLayout>
                 </androidx.appcompat.widget.Toolbar>
-
             </LinearLayout>
-
         </com.google.android.material.appbar.CollapsingToolbarLayout>
-
     </com.google.android.material.appbar.AppBarLayout>
 </merge>

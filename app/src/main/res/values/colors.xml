@@ -23,6 +23,5 @@
     <color name="selectedControlIndicator">#D6182A</color>
 
     <color name="mainFeedBackground">@color/colorPrimary</color>
-
-
+    <color name="tvShowBackground">@color/colorPrimary</color>
 </resources>

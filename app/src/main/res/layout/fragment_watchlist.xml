@@ -15,5 +15,4 @@
         android:scrollbars="vertical"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         tools:listitem="@layout/item_small" />
-
 </FrameLayout>

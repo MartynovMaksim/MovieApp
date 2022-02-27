@@ -41,7 +41,6 @@
             tools:textColor="@color/white" />
     </RelativeLayout>
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/items_container"
         android:layout_width="match_parent"

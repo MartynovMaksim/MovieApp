@@ -43,6 +43,5 @@
             android:contentDescription="@string/close"
             android:src="@drawable/ic_delete"
             tools:visibility="visible" />
-
     </RelativeLayout>
 </FrameLayout>

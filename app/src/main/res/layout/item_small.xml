@@ -6,6 +6,6 @@
     android:layout_width="@dimen/image_preview_width"
     android:layout_height="@dimen/image_preview_height"
     android:layout_margin="@dimen/material_margin_small"
-    tools:src="@drawable/ic_avatar"
     android:scaleType="centerCrop"
-    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize10Percent" />
+    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize10Percent"
+    tools:src="@drawable/ic_avatar" />

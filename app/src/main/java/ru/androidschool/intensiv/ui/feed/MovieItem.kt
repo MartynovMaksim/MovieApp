@@ -7,7 +7,7 @@ import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.Movie
 import ru.androidschool.intensiv.databinding.ItemWithTextBinding
 
-class MovieItem(
+open class MovieItem(
     private val content: Movie,
     private val onClick: (movie: Movie) -> Unit
 ) : BindableItem<ItemWithTextBinding>() {

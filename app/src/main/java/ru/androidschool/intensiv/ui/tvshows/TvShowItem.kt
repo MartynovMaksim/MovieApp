@@ -23,6 +23,7 @@ class TvShowItem(
 
         Picasso.get()
             .load(content.posterPath)
+            .fit()
             .into(view.imagePreview)
     }
 

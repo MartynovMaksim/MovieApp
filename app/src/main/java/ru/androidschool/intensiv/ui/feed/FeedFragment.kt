@@ -62,12 +62,12 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
                 openSearch(it.toString())
             }
         }
-        getNowPlayingMovies()
-        getUpcomingMovies()
-        getPopularMovies()
+        showNowPlayingMovies()
+        showUpcomingMovies()
+        showPopularMovies()
     }
 
-    private fun getNowPlayingMovies() {
+    private fun showNowPlayingMovies() {
         val nowPlayingMoviesCall =
             MovieApiClient.apiClient.getNowPlayingMovies(MainActivity.API_KEY, "ru", 1)
         nowPlayingMoviesCall.enqueue(object : Callback<MoviesResponse> {
@@ -94,7 +94,7 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
         })
     }
 
-    private fun getUpcomingMovies() {
+    private fun showUpcomingMovies() {
         val upcomingMoviesCall =
             MovieApiClient.apiClient.getUpcomingMovies(MainActivity.API_KEY, "ru", 1)
         upcomingMoviesCall.enqueue(object : Callback<MoviesResponse> {
@@ -123,7 +123,7 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
         })
     }
 
-    private fun getPopularMovies() {
+    private fun showPopularMovies() {
         val popularMoviesCall =
             MovieApiClient.apiClient.getPopularMovies(MainActivity.API_KEY, "ru", 1)
         popularMoviesCall.enqueue(object : Callback<MoviesResponse> {

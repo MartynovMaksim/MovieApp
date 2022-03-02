@@ -56,17 +56,21 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         searchBinding.searchToolbar.binding.searchEditText.afterTextChanged {
             Timber.d(it.toString())
             if (it.toString().length > MIN_LENGTH) {
                 openSearch(it.toString())
             }
         }
+        getNowPlayingMovies()
+        getUpcomingMovies()
+        getPopularMovies()
+    }
 
-        val nowPlayingMovieResponse =
-            MovieApiClient.apiClient.getNowPlaying(MainActivity.API_KEY, "ru", 1)
-        nowPlayingMovieResponse.enqueue(object : Callback<MoviesResponse> {
+    private fun getNowPlayingMovies() {
+        val nowPlayingMoviesCall =
+            MovieApiClient.apiClient.getNowPlayingMovies(MainActivity.API_KEY, "ru", 1)
+        nowPlayingMoviesCall.enqueue(object : Callback<MoviesResponse> {
             override fun onResponse(
                 call: Call<MoviesResponse>,
                 response: Response<MoviesResponse>
@@ -74,11 +78,10 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
                 val movies = response.body()?.results
                 val nowPlayingMovie = listOf(
                     movies?.let {
-                        MainCardContainer(R.string.recommended,
-                            it.map { movieData ->
-                                MovieItem(movieData) {
-
-                                }
+                        MainCardContainer(
+                            R.string.recommended,
+                            it.map { movie ->
+                                MovieItem(movie) {}
                             })
                     }
                 )
@@ -88,6 +91,64 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
             override fun onFailure(call: Call<MoviesResponse>, error: Throwable) {
                 Timber.e(error)
             }
+        })
+    }
+
+    private fun getUpcomingMovies() {
+        val upcomingMoviesCall =
+            MovieApiClient.apiClient.getUpcomingMovies(MainActivity.API_KEY, "ru", 1)
+        upcomingMoviesCall.enqueue(object : Callback<MoviesResponse> {
+            override fun onResponse(
+                call: Call<MoviesResponse>,
+                response: Response<MoviesResponse>
+            ) {
+                val movies = response.body()?.results
+                val upcomingMovies = listOf(
+                    movies?.let {
+                        MainCardContainer(
+                            R.string.upcoming,
+                            it.map { movie ->
+                                MovieItem(movie) {}
+                            }
+                        )
+                    }
+                )
+                binding.moviesRecyclerView.adapter = adapter.apply { addAll(upcomingMovies) }
+            }
+
+            override fun onFailure(call: Call<MoviesResponse>, error: Throwable) {
+                Timber.e(error)
+            }
+
+        })
+    }
+
+    private fun getPopularMovies() {
+        val popularMoviesCall =
+            MovieApiClient.apiClient.getPopularMovies(MainActivity.API_KEY, "ru", 1)
+        popularMoviesCall.enqueue(object : Callback<MoviesResponse> {
+            override fun onResponse(
+                call: Call<MoviesResponse>,
+                response: Response<MoviesResponse>
+            ) {
+                val movies = response.body()?.results
+                val popularMovies = listOf(
+                    movies?.let {
+                        MainCardContainer(
+                            R.string.popular,
+                            it.map { movie ->
+                                MovieItem(movie) {}
+                            }
+                        )
+                    }
+                )
+                binding.moviesRecyclerView.adapter = adapter.apply { addAll(popularMovies) }
+            }
+
+            override fun onFailure(call: Call<MoviesResponse>, error: Throwable) {
+                Timber.e(error)
+            }
+
         })
     }
 

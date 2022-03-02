@@ -7,7 +7,21 @@ import ru.androidschool.intensiv.data.MoviesResponse
 
 interface MovieApiInterface {
     @GET("movie/now_playing")
-    fun getNowPlaying(
+    fun getNowPlayingMovies(
+        @Query("api_key") apiKey: String,
+        @Query("language") language: String,
+        @Query("page") page: Int
+    ): Call<MoviesResponse>
+
+    @GET("movie/upcoming")
+    fun getUpcomingMovies(
+        @Query("api_key") apiKey: String,
+        @Query("language") language: String,
+        @Query("page") page: Int
+    ): Call<MoviesResponse>
+
+    @GET("movie/popular")
+    fun getPopularMovies(
         @Query("api_key") apiKey: String,
         @Query("language") language: String,
         @Query("page") page: Int

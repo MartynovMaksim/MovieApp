@@ -41,15 +41,15 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val tvShowsList = MockRepository.getMovies().map {
-            TvShowItem(it) { tvShow ->
-                openTvShowDetails(tvShow)
-            }
-        }
-        binding.tvShowRecyclerView.adapter =
-            GroupAdapter<GroupieViewHolder>().apply {
-                addAll(tvShowsList)
-            }
+//        val tvShowsList = MockRepository.getMovies().map {
+//            TvShowItem(it) { tvShow ->
+//                openTvShowDetails(tvShow)
+//            }
+//        }
+//        binding.tvShowRecyclerView.adapter =
+//            GroupAdapter<GroupieViewHolder>().apply {
+//                addAll(tvShowsList)
+//            }
     }
 
     private fun openTvShowDetails(movie: Movie) {

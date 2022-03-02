@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.data.Movie
+import ru.androidschool.intensiv.data.MovieMock
 import ru.androidschool.intensiv.databinding.MovieDetailsFragmentBinding
 
 class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
@@ -27,7 +27,7 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val movie = arguments?.getSerializable("movie") as Movie?
+        val movie = arguments?.getSerializable("movie") as MovieMock?
 
         binding.backButton.setOnClickListener { parentFragmentManager.popBackStack() }
         if (movie != null) {

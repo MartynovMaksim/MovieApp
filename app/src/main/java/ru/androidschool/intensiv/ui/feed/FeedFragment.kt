@@ -12,7 +12,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import ru.androidschool.intensiv.MainActivity
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.data.Movie
+import ru.androidschool.intensiv.data.MovieMock
 import ru.androidschool.intensiv.data.MoviesResponse
 import ru.androidschool.intensiv.databinding.FeedFragmentBinding
 import ru.androidschool.intensiv.databinding.FeedHeaderBinding
@@ -91,9 +91,9 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
         })
     }
 
-    private fun openMovieDetails(movie: Movie) {
+    private fun openMovieDetails(movieMock: MovieMock) {
         val bundle = Bundle()
-        bundle.putSerializable(KEY_MOVIE, movie)
+        bundle.putSerializable(KEY_MOVIE, movieMock)
         findNavController().navigate(R.id.movie_details_fragment, bundle, options)
     }
 

@@ -4,12 +4,12 @@ import android.view.View
 import com.squareup.picasso.Picasso
 import com.xwray.groupie.viewbinding.BindableItem
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.data.MovieData
+import ru.androidschool.intensiv.data.Movie
 import ru.androidschool.intensiv.databinding.ItemWithTextBinding
 
 open class MovieItem(
-    private val content: MovieData,
-    private val onClick: (movie: MovieData) -> Unit
+    private val content: Movie,
+    private val onClick: (movie: Movie) -> Unit
 ) : BindableItem<ItemWithTextBinding>() {
 
     override fun getLayout(): Int = R.layout.item_with_text

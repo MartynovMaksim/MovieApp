@@ -7,11 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
-import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.GroupieViewHolder
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.data.MockRepository
-import ru.androidschool.intensiv.data.Movie
+import ru.androidschool.intensiv.data.MovieMock
 import ru.androidschool.intensiv.databinding.TvShowsFragmentBinding
 import ru.androidschool.intensiv.ui.feed.FeedFragment
 
@@ -52,9 +49,9 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
 //            }
     }
 
-    private fun openTvShowDetails(movie: Movie) {
+    private fun openTvShowDetails(movieMock: MovieMock) {
         val bundle = Bundle()
-        bundle.putSerializable(FeedFragment.KEY_MOVIE, movie)
+        bundle.putSerializable(FeedFragment.KEY_MOVIE, movieMock)
         findNavController().navigate(R.id.movie_details_fragment, bundle, options)
     }
 

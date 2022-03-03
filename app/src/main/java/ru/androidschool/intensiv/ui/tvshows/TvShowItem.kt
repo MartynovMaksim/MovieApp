@@ -1,11 +1,11 @@
 package ru.androidschool.intensiv.ui.tvshows
 
 import android.view.View
-import com.squareup.picasso.Picasso
 import com.xwray.groupie.viewbinding.BindableItem
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.TvShow
 import ru.androidschool.intensiv.databinding.ItemWithTextBinding
+import ru.androidschool.intensiv.utils.loadImage
 
 class TvShowItem(
     private val content: TvShow,
@@ -20,11 +20,7 @@ class TvShowItem(
         view.content.setOnClickListener {
             onClick.invoke(content)
         }
-
-        Picasso.get()
-            .load(content.posterPath)
-            .fit()
-            .into(view.imagePreview)
+        view.imagePreview.loadImage(content.posterPath)
     }
 
     override fun initializeViewBinding(v: View) = ItemWithTextBinding.bind(v)

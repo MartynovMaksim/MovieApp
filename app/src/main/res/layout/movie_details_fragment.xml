@@ -19,7 +19,6 @@
                 android:id="@+id/details_image"
                 android:layout_width="match_parent"
                 android:layout_height="400dp"
-                android:background="@drawable/bg_rounded_20dp"
                 android:scaleType="fitXY"
                 tools:ignore="ContentDescription"
                 tools:src="@drawable/ic_avatar" />
@@ -131,19 +130,12 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="70dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/studio"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                    style="@style/detailMainDescription"
+                    android:text="@string/studio" />
 
                 <TextView
                     android:id="@+id/text_studio"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/textColorGrey"
-                    android:textSize="14sp"
+                    style="@style/detailContentDescription"
                     tools:text="Warner Bros." />
             </LinearLayout>
 
@@ -154,19 +146,12 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="70dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/genre"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                    style="@style/detailMainDescription"
+                    android:text="@string/genre" />
 
                 <TextView
                     android:id="@+id/text_genre"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/textColorGrey"
-                    android:textSize="14sp"
+                    style="@style/detailContentDescription"
                     tools:text="Action" />
             </LinearLayout>
 
@@ -177,19 +162,12 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="70dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/year"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                    style="@style/detailMainDescription"
+                    android:text="@string/year" />
 
                 <TextView
                     android:id="@+id/text_year"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/textColorGrey"
-                    android:textSize="14sp"
+                    style="@style/detailContentDescription"
                     tools:text="2018" />
             </LinearLayout>
         </LinearLayout>

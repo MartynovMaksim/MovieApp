@@ -5,20 +5,27 @@
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.34615384615384615" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1935" />
+        <entry key="app/src/main/res/drawable/bg_bottom_rounded_16dp.xml" value="0.19497705078125" />
+        <entry key="app/src/main/res/drawable/ic_arrow_back.xml" value="0.1935" />
         <entry key="app/src/main/res/drawable/ic_movies.xml" value="0.1935" />
+        <entry key="app/src/main/res/drawable/ic_unfavorite.xml" value="0.1935" />
+        <entry key="app/src/main/res/drawable/ic_wave.xml" value="0.1935" />
         <entry key="app/src/main/res/drawable/list_background.xml" value="0.1935" />
+        <entry key="app/src/main/res/drawable/search_background.xml" value="0.1935" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25244914621546655" />
+        <entry key="app/src/main/res/layout/details_header.xml" value="0.26464300983326206" />
         <entry key="app/src/main/res/layout/feed_fragment.xml" value="0.27898209236569277" />
         <entry key="app/src/main/res/layout/feed_header.xml" value="0.35991846797676436" />
         <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.18385416666666668" />
         <entry key="app/src/main/res/layout/fragment_search.xml" value="0.33645833333333336" />
         <entry key="app/src/main/res/layout/fragment_watchlist.xml" value="0.30833333333333335" />
+        <entry key="app/src/main/res/layout/item_actor.xml" value="0.26464300983326206" />
         <entry key="app/src/main/res/layout/item_big.xml" value="0.3223958333333333" />
         <entry key="app/src/main/res/layout/item_card.xml" value="0.3223958333333333" />
         <entry key="app/src/main/res/layout/item_small.xml" value="0.3223958333333333" />
         <entry key="app/src/main/res/layout/item_with_text.xml" value="0.3223958333333333" />
         <entry key="app/src/main/res/layout/item_with_text_large.xml" value="0.407880147298177" />
-        <entry key="app/src/main/res/layout/movie_details_fragment.xml" value="0.33645833333333336" />
+        <entry key="app/src/main/res/layout/movie_details_fragment.xml" value="0.346708037596141" />
         <entry key="app/src/main/res/layout/search_toolbar.xml" value="0.10410334346504559" />
         <entry key="app/src/main/res/layout/tv_shows_fragment.xml" value="0.33645833333333336" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.30833333333333335" />

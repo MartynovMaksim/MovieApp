@@ -54,7 +54,12 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
 
     private fun openTvShowDetails(movie: Movie) {
         val bundle = Bundle()
-        bundle.putString(FeedFragment.KEY_TITLE, movie.title)
+        bundle.putSerializable(FeedFragment.KEY_MOVIE, movie)
         findNavController().navigate(R.id.movie_details_fragment, bundle, options)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

@@ -19,10 +19,10 @@
                 android:id="@+id/details_image"
                 android:layout_width="match_parent"
                 android:layout_height="400dp"
-                android:scaleType="fitXY"
                 android:background="@drawable/bg_rounded_20dp"
-                tools:src="@drawable/ic_avatar"
-                tools:ignore="ContentDescription" />
+                android:scaleType="fitXY"
+                tools:ignore="ContentDescription"
+                tools:src="@drawable/ic_avatar" />
 
             <ImageView
                 android:id="@+id/back_button"
@@ -106,15 +106,15 @@
                     tools:rating="5" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-
             <TextView
+                android:id="@+id/overview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Действие фильма разворачивается в необъятном и захватывающем подводном мире семи морей, а сюжет знакомит зрителей с историей происхождения получеловека-полуатланта Артура Карри и ключевыми событиями его жизни – теми, что заставят его не только столкнуться с самим собой, но и выяснить, достоин ли он быть тем, кем ему суждено… царем!"
                 android:textColor="@color/textColorGrey"
                 android:textSize="12sp"
-                app:lineHeight="18sp" />
+                app:lineHeight="18sp"
+                tools:text="Действие фильма разворачивается в необъятном и захватывающем подводном мире семи морей, а сюжет знакомит зрителей с историей происхождения получеловека-полуатланта Артура Карри и ключевыми событиями его жизни – теми, что заставят его не только столкнуться с самим собой, но и выяснить, достоин ли он быть тем, кем ему суждено… царем!" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"

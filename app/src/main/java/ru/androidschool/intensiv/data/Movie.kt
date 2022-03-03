@@ -1,7 +1,10 @@
 package ru.androidschool.intensiv.data
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Movie(
     @SerializedName("adult")
     val isAdult: Boolean?,
@@ -24,7 +27,7 @@ data class Movie(
     val voteAverage: Float?,
     @SerializedName("vote_count")
     val voteCount: Int?
-) {
+) : Parcelable {
     @SerializedName("poster_path")
     var posterPath: String? = null
         get() = "https://image.tmdb.org/t/p/w500$field"

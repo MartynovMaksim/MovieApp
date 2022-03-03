@@ -14,11 +14,10 @@ import retrofit2.Callback
 import retrofit2.Response
 import ru.androidschool.intensiv.MainActivity
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.data.MovieMock
+import ru.androidschool.intensiv.data.TvShow
 import ru.androidschool.intensiv.data.TvShowsResponse
 import ru.androidschool.intensiv.databinding.TvShowsFragmentBinding
 import ru.androidschool.intensiv.network.MovieApiClient
-import ru.androidschool.intensiv.ui.feed.FeedFragment
 import timber.log.Timber
 
 class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
@@ -61,7 +60,9 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
                 val tvShows = response.body()?.results
                 val popularTvShows = tvShows?.let {
                     it.map { tvShow ->
-                        TvShowItem(tvShow) {}
+                        TvShowItem(tvShow) {
+                            openTvShowDetails(tvShow)
+                        }
                     }
                 }
                 binding.tvShowRecyclerView.adapter = GroupAdapter<GroupieViewHolder>().apply {
@@ -78,14 +79,18 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
         })
     }
 
-    private fun openTvShowDetails(movieMock: MovieMock) {
+    private fun openTvShowDetails(tvShow: TvShow) {
         val bundle = Bundle()
-        bundle.putSerializable(FeedFragment.KEY_MOVIE, movieMock)
+        bundle.putParcelable(KEY_TV, tvShow)
         findNavController().navigate(R.id.movie_details_fragment, bundle, options)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        const val KEY_TV = "tv_show"
     }
 }

@@ -16,7 +16,7 @@ class TvShowItem(
 
     override fun bind(view: ItemWithTextBinding, position: Int) {
         view.description.text = content.name
-        view.movieRating.rating = requireNotNull(content.voteAverage).div(2)
+        view.movieRating.rating = content.voteAverage?.div(2) ?: 0F
         view.content.setOnClickListener {
             onClick.invoke(content)
         }

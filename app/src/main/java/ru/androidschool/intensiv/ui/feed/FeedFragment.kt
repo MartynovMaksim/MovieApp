@@ -12,6 +12,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import ru.androidschool.intensiv.MainActivity
 import ru.androidschool.intensiv.R
+import ru.androidschool.intensiv.data.Movie
 import ru.androidschool.intensiv.data.MovieMock
 import ru.androidschool.intensiv.data.MoviesResponse
 import ru.androidschool.intensiv.databinding.FeedFragmentBinding
@@ -81,7 +82,9 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
                         MainCardContainer(
                             R.string.recommended,
                             it.map { movie ->
-                                MovieItem(movie) {}
+                                MovieItem(movie) {
+                                    openMovieDetails(movie)
+                                }
                             })
                     }
                 )
@@ -108,7 +111,9 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
                         MainCardContainer(
                             R.string.upcoming,
                             it.map { movie ->
-                                MovieItem(movie) {}
+                                MovieItem(movie) {
+                                    openMovieDetails(movie)
+                                }
                             }
                         )
                     }
@@ -137,7 +142,9 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
                         MainCardContainer(
                             R.string.popular,
                             it.map { movie ->
-                                MovieItem(movie) {}
+                                MovieItem(movie) {
+                                    openMovieDetails(movie)
+                                }
                             }
                         )
                     }
@@ -152,9 +159,9 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
         })
     }
 
-    private fun openMovieDetails(movieMock: MovieMock) {
+    private fun openMovieDetails(movie: Movie) {
         val bundle = Bundle()
-        bundle.putSerializable(KEY_MOVIE, movieMock)
+        bundle.putParcelable(KEY_MOVIE, movie)
         findNavController().navigate(R.id.movie_details_fragment, bundle, options)
     }
 

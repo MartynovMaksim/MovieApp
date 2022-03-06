@@ -34,5 +34,5 @@ interface MovieApiInterface {
         @Query("api_key") apiKey: String,
         @Query("language") language: String,
         @Query("page") page: Int
-    ): Call<TvShowsResponse>
+    ): Single<TvShowsResponse>
 }

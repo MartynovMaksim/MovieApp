@@ -7,14 +7,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.schedulers.Schedulers
 import ru.androidschool.intensiv.MainActivity
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.Movie
-import ru.androidschool.intensiv.data.MovieMock
-import ru.androidschool.intensiv.data.MoviesResponse
 import ru.androidschool.intensiv.databinding.FeedFragmentBinding
 import ru.androidschool.intensiv.databinding.FeedHeaderBinding
 import ru.androidschool.intensiv.network.MovieApiClient
@@ -44,6 +43,8 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
         }
     }
 
+    private val disposables: CompositeDisposable = CompositeDisposable()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -69,94 +70,69 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
     }
 
     private fun showNowPlayingMovies() {
-        val nowPlayingMoviesCall =
-            MovieApiClient.apiClient.getNowPlayingMovies(MainActivity.API_KEY, "ru", 1)
-        nowPlayingMoviesCall.enqueue(object : Callback<MoviesResponse> {
-            override fun onResponse(
-                call: Call<MoviesResponse>,
-                response: Response<MoviesResponse>
-            ) {
-                val movies = response.body()?.results
+        disposables += MovieApiClient.apiClient.getNowPlayingMovies(MainActivity.API_KEY, "ru", 1)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ movieResponse ->
+                val movies = movieResponse.results
                 val nowPlayingMovie = listOf(
-                    movies?.let {
-                        MainCardContainer(
-                            R.string.recommended,
-                            it.map { movie ->
-                                MovieItem(movie) {
-                                    openMovieDetails(movie)
-                                }
-                            })
-                    }
+                    MainCardContainer(
+                        R.string.recommended,
+                        movies.map { movie ->
+                            MovieItem(movie) {
+                                openMovieDetails(movie)
+                            }
+                        }
+                    )
                 )
                 binding.moviesRecyclerView.adapter = adapter.apply { addAll(nowPlayingMovie) }
-            }
-
-            override fun onFailure(call: Call<MoviesResponse>, error: Throwable) {
-                Timber.e(error)
-            }
-        })
+            }, {
+                Timber.tag(TAG).e(it)
+            })
     }
 
     private fun showUpcomingMovies() {
-        val upcomingMoviesCall =
-            MovieApiClient.apiClient.getUpcomingMovies(MainActivity.API_KEY, "ru", 1)
-        upcomingMoviesCall.enqueue(object : Callback<MoviesResponse> {
-            override fun onResponse(
-                call: Call<MoviesResponse>,
-                response: Response<MoviesResponse>
-            ) {
-                val movies = response.body()?.results
+        disposables += MovieApiClient.apiClient.getUpcomingMovies(MainActivity.API_KEY, "ru", 1)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ movieResponse ->
+                val movies = movieResponse.results
                 val upcomingMovies = listOf(
-                    movies?.let {
-                        MainCardContainer(
-                            R.string.upcoming,
-                            it.map { movie ->
-                                MovieItem(movie) {
-                                    openMovieDetails(movie)
-                                }
+                    MainCardContainer(
+                        R.string.upcoming,
+                        movies.map { movie ->
+                            MovieItem(movie) {
+                                openMovieDetails(movie)
                             }
-                        )
-                    }
+                        }
+                    )
                 )
                 binding.moviesRecyclerView.adapter = adapter.apply { addAll(upcomingMovies) }
-            }
-
-            override fun onFailure(call: Call<MoviesResponse>, error: Throwable) {
-                Timber.e(error)
-            }
-
-        })
+            }, {
+                Timber.tag(TAG).e(it)
+            })
     }
 
     private fun showPopularMovies() {
-        val popularMoviesCall =
-            MovieApiClient.apiClient.getPopularMovies(MainActivity.API_KEY, "ru", 1)
-        popularMoviesCall.enqueue(object : Callback<MoviesResponse> {
-            override fun onResponse(
-                call: Call<MoviesResponse>,
-                response: Response<MoviesResponse>
-            ) {
-                val movies = response.body()?.results
+        disposables += MovieApiClient.apiClient.getPopularMovies(MainActivity.API_KEY, "ru", 1)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ movieResponse ->
+                val movies = movieResponse.results
                 val popularMovies = listOf(
-                    movies?.let {
-                        MainCardContainer(
-                            R.string.popular,
-                            it.map { movie ->
-                                MovieItem(movie) {
-                                    openMovieDetails(movie)
-                                }
+                    MainCardContainer(
+                        R.string.popular,
+                        movies.map { movie ->
+                            MovieItem(movie) {
+                                openMovieDetails(movie)
                             }
-                        )
-                    }
+                        }
+                    )
                 )
                 binding.moviesRecyclerView.adapter = adapter.apply { addAll(popularMovies) }
-            }
-
-            override fun onFailure(call: Call<MoviesResponse>, error: Throwable) {
-                Timber.e(error)
-            }
-
-        })
+            }, {
+                Timber.tag(TAG).e(it)
+            })
     }
 
     private fun openMovieDetails(movie: Movie) {
@@ -174,22 +150,27 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
     override fun onStop() {
         super.onStop()
         searchBinding.searchToolbar.clear()
-        adapter.clear()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.main_menu, menu)
     }
 
+    override fun onResume() {
+        super.onResume()
+        binding.moviesRecyclerView.adapter = adapter
+    }
+
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
         _searchBinding = null
+        disposables.dispose()
+        super.onDestroyView()
     }
 
     companion object {
+        const val TAG = "FeedFragment"
         const val MIN_LENGTH = 3
-        const val KEY_TITLE = "title"
         const val KEY_SEARCH = "search"
         const val KEY_MOVIE = "movie"
     }

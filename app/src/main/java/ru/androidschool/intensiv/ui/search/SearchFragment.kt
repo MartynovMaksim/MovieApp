@@ -75,7 +75,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         val observableForSearch = Observable.create<String> { emitter ->
             searchBinding.searchToolbar.binding.searchEditText.afterTextChanged {
                 Timber.tag(TAG).d(it.toString())
-                if (it.toString().length > MIN_LENGTH) {
+                if (it?.trim().toString().length > MIN_LENGTH) {
                     emitter.onNext(it.toString())
                 }
                 if (it.isNullOrBlank()) {

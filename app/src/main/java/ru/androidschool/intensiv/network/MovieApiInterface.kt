@@ -35,4 +35,11 @@ interface MovieApiInterface {
         @Query("language") language: String,
         @Query("page") page: Int
     ): Single<TvShowsResponse>
+
+    @GET("search/movie")
+    fun getSearchResult(
+        @Query("api_key") apiKey: String,
+        @Query("query") query: String,
+        @Query("language") language: String
+    ): Single<MoviesResponse>
 }

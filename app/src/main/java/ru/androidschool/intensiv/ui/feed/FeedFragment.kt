@@ -2,6 +2,7 @@ package ru.androidschool.intensiv.ui.feed
 
 import android.os.Bundle
 import android.view.*
+import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
@@ -12,9 +13,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
-import ru.androidschool.intensiv.MainActivity
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.Movie
+import ru.androidschool.intensiv.data.MoviesResponse
 import ru.androidschool.intensiv.databinding.FeedFragmentBinding
 import ru.androidschool.intensiv.databinding.FeedHeaderBinding
 import ru.androidschool.intensiv.network.MovieApiClient
@@ -71,19 +72,8 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
         disposables += MovieApiClient.apiClient.getNowPlayingMovies()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ movieResponse ->
-                val movies = movieResponse.results
-                val nowPlayingMovie = listOf(
-                    MainCardContainer(
-                        R.string.recommended,
-                        movies.map { movie ->
-                            MovieItem(movie) {
-                                openMovieDetails(movie)
-                            }
-                        }
-                    )
-                )
-                binding.moviesRecyclerView.adapter = adapter.apply { addAll(nowPlayingMovie) }
+            .subscribe({ moviesResponse ->
+                addMoviesResponseToAdapter(moviesResponse, R.string.recommended)
             }, {
                 Timber.tag(TAG).e(it)
             })
@@ -93,19 +83,8 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
         disposables += MovieApiClient.apiClient.getUpcomingMovies()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ movieResponse ->
-                val movies = movieResponse.results
-                val upcomingMovies = listOf(
-                    MainCardContainer(
-                        R.string.upcoming,
-                        movies.map { movie ->
-                            MovieItem(movie) {
-                                openMovieDetails(movie)
-                            }
-                        }
-                    )
-                )
-                binding.moviesRecyclerView.adapter = adapter.apply { addAll(upcomingMovies) }
+            .subscribe({ moviesResponse ->
+                addMoviesResponseToAdapter(moviesResponse, R.string.upcoming)
             }, {
                 Timber.tag(TAG).e(it)
             })
@@ -115,19 +94,8 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
         disposables += MovieApiClient.apiClient.getPopularMovies()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ movieResponse ->
-                val movies = movieResponse.results
-                val popularMovies = listOf(
-                    MainCardContainer(
-                        R.string.popular,
-                        movies.map { movie ->
-                            MovieItem(movie) {
-                                openMovieDetails(movie)
-                            }
-                        }
-                    )
-                )
-                binding.moviesRecyclerView.adapter = adapter.apply { addAll(popularMovies) }
+            .subscribe({ moviesResponse ->
+                addMoviesResponseToAdapter(moviesResponse, R.string.popular)
             }, {
                 Timber.tag(TAG).e(it)
             })
@@ -150,6 +118,21 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
             }, {
                 Timber.tag(TAG).e(it)
             })
+    }
+
+    private fun addMoviesResponseToAdapter(moviesResponse: MoviesResponse, @StringRes title: Int) {
+        val movies = moviesResponse.results
+        val popularMovies = listOf(
+            MainCardContainer(
+                title,
+                movies.map { movie ->
+                    MovieItem(movie) {
+                        openMovieDetails(movie)
+                    }
+                }
+            )
+        )
+        binding.moviesRecyclerView.adapter = adapter.apply { addAll(popularMovies) }
     }
 
     private fun openMovieDetails(movie: Movie) {

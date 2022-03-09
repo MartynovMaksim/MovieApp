@@ -68,7 +68,7 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
     }
 
     private fun showNowPlayingMovies() {
-        disposables += MovieApiClient.apiClient.getNowPlayingMovies(MainActivity.API_KEY, "ru", 1)
+        disposables += MovieApiClient.apiClient.getNowPlayingMovies()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ movieResponse ->
@@ -90,7 +90,7 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
     }
 
     private fun showUpcomingMovies() {
-        disposables += MovieApiClient.apiClient.getUpcomingMovies(MainActivity.API_KEY, "ru", 1)
+        disposables += MovieApiClient.apiClient.getUpcomingMovies()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ movieResponse ->
@@ -112,7 +112,7 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
     }
 
     private fun showPopularMovies() {
-        disposables += MovieApiClient.apiClient.getPopularMovies(MainActivity.API_KEY, "ru", 1)
+        disposables += MovieApiClient.apiClient.getPopularMovies()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ movieResponse ->

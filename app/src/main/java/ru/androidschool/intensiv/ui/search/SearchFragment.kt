@@ -94,7 +94,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     }
 
     private fun searchMovie(query: String) {
-        disposables += MovieApiClient.apiClient.getSearchResult(MainActivity.API_KEY, query, "ru")
+        disposables += MovieApiClient.apiClient.getSearchResult(query = query)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { movieResponse ->

@@ -52,7 +52,7 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
     }
 
     private fun showPopularTvShows() {
-        disposables += MovieApiClient.apiClient.getPopularTvShow(MainActivity.API_KEY, "ru", 1)
+        disposables += MovieApiClient.apiClient.getPopularTvShow()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ tvResponse ->

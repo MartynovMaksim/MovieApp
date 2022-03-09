@@ -10,8 +10,6 @@ data class TvShow(
     val id: Int?,
     @SerializedName("backdrop_path")
     val backdropPath: String?,
-    @SerializedName("vote_average")
-    val voteAverage: Float?,
     val overview: String?,
     @SerializedName("first_air_date")
     val firstAirDate: String?,
@@ -30,4 +28,8 @@ data class TvShow(
     @SerializedName("poster_path")
     var posterPath: String? = null
         get() = "https://image.tmdb.org/t/p/w500$field"
+
+    @SerializedName("vote_average")
+    var voteAverage: Float? = null
+        get() = field?.div(2) ?: 0F
 }

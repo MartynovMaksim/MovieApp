@@ -65,7 +65,6 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
                 binding.tvShowRecyclerView.adapter = GroupAdapter<GroupieViewHolder>().apply {
                     addAll(popularTvShows)
                 }
-
             }, {
                 Timber.tag(TAG).e(it)
             })

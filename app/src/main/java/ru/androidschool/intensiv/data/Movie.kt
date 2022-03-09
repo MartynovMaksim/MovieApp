@@ -24,12 +24,14 @@ data class Movie(
     val releaseDate: String?,
     val title: String?,
     val video: Boolean?,
-    @SerializedName("vote_average")
-    val voteAverage: Float?,
     @SerializedName("vote_count")
     val voteCount: Int?
 ) : Parcelable {
     @SerializedName("poster_path")
     var posterPath: String? = null
         get() = "${BuildConfig.IMAGE_BASE_URL}$field"
+
+    @SerializedName("vote_average")
+    var voteAverage: Float? = null
+        get() = field?.div(2)
 }

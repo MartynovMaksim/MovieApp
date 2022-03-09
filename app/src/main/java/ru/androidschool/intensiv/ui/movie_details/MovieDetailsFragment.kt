@@ -5,11 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.squareup.picasso.Picasso
-import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.Movie
+import ru.androidschool.intensiv.data.TvShow
 import ru.androidschool.intensiv.databinding.MovieDetailsFragmentBinding
+import ru.androidschool.intensiv.utils.loadImageForDetailsFragment
 
 class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
 
@@ -27,19 +27,30 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val movie = arguments?.getSerializable("movie") as Movie?
+        val movie = arguments?.getParcelable<Movie>("movie")
+        val tvShow = arguments?.getParcelable<TvShow>("tv_show")
 
+        movie?.let { setDetailsForMovie(it) }
+        tvShow?.let { setDetailsForTvShow(it) }
         binding.backButton.setOnClickListener { parentFragmentManager.popBackStack() }
-        if (movie != null) {
-            with(movie) {
-                binding.movieRating.rating = rating
-                binding.detailsTitle.text = title
-            }
+    }
+
+    private fun setDetailsForMovie(movie: Movie) {
+        with(movie) {
+            binding.movieRating.rating = voteAverage?.div(2) ?: 0F
+            binding.detailsTitle.text = title
+            binding.overview.text = overview
+            binding.detailsImage.loadImageForDetailsFragment(posterPath)
         }
-        Picasso.get()
-            .load("https://m.media-amazon.com/images/M/MV5BYTk3MDljOWQtNGI2My00OTEzLTlhYjQtOTQ4ODM2MzUwY2IwXkEyXkFqcGdeQXVyNTIzOTk5ODM@._V1_.jpg")
-            .transform(RoundedCornersTransformation(24,0,RoundedCornersTransformation.CornerType.BOTTOM))
-            .into(binding.detailsImage)
+    }
+
+    private fun setDetailsForTvShow(tvShow: TvShow) {
+        with(tvShow) {
+            binding.movieRating.rating = voteAverage?.div(2) ?: 0F
+            binding.detailsTitle.text = name
+            binding.overview.text = overview
+            binding.detailsImage.loadImageForDetailsFragment(posterPath)
+        }
     }
 
     override fun onDestroyView() {

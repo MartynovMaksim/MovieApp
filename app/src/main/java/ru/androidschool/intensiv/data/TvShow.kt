@@ -5,28 +5,27 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class Movie(
-    @SerializedName("adult")
-    val isAdult: Boolean?,
+data class TvShow(
+    val popularity: String?,
+    val id: Int?,
     @SerializedName("backdrop_path")
     val backdropPath: String?,
-    @SerializedName("genre_ids")
-    val genreIds: List<Int>?,
-    val id: Int?,
-    @SerializedName("original_language")
-    val originalLanguage: String?,
-    @SerializedName("original_title")
-    val originalTitle: String?,
-    val overview: String?,
-    val popularity: Double?,
-    @SerializedName("release_date")
-    val releaseDate: String?,
-    val title: String?,
-    val video: Boolean?,
     @SerializedName("vote_average")
     val voteAverage: Float?,
+    val overview: String?,
+    @SerializedName("first_air_date")
+    val firstAirDate: String?,
+    @SerializedName("origin_country")
+    val originCountries: List<String>?,
+    @SerializedName("genre_ids")
+    val genreIds: List<Int>?,
+    @SerializedName("original_language")
+    val originalLanguage: String?,
     @SerializedName("vote_count")
-    val voteCount: Int?
+    val VoteCount: Int?,
+    val name: String?,
+    @SerializedName("original_name")
+    val originalName: String?
 ) : Parcelable {
     @SerializedName("poster_path")
     var posterPath: String? = null

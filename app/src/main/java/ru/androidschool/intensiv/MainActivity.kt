@@ -13,7 +13,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private val TAG = MainActivity::class.java.simpleName
-        private val API_KEY = BuildConfig.THE_MOVIE_DATABASE_API
+        const val API_KEY = BuildConfig.THE_MOVIE_DATABASE_API
     }
 
     private lateinit var binding: ActivityMainBinding

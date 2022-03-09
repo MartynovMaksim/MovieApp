@@ -7,11 +7,17 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import ru.androidschool.intensiv.MainActivity
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.data.MockRepository
 import ru.androidschool.intensiv.data.Movie
+import ru.androidschool.intensiv.data.MovieMock
+import ru.androidschool.intensiv.data.MoviesResponse
 import ru.androidschool.intensiv.databinding.FeedFragmentBinding
 import ru.androidschool.intensiv.databinding.FeedHeaderBinding
+import ru.androidschool.intensiv.network.MovieApiClient
 import ru.androidschool.intensiv.ui.afterTextChanged
 import timber.log.Timber
 
@@ -51,49 +57,111 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         searchBinding.searchToolbar.binding.searchEditText.afterTextChanged {
             Timber.d(it.toString())
             if (it.toString().length > MIN_LENGTH) {
                 openSearch(it.toString())
             }
         }
+        showNowPlayingMovies()
+        showUpcomingMovies()
+        showPopularMovies()
+    }
 
-        // Используя Мок-репозиторий получаем фэйковый список фильмов
-        val moviesList = listOf(
-            MainCardContainer(
-                R.string.recommended,
-                MockRepository.getMovies().map {
-                    MovieItem(it) { movie ->
-                        openMovieDetails(
-                            movie
+    private fun showNowPlayingMovies() {
+        val nowPlayingMoviesCall =
+            MovieApiClient.apiClient.getNowPlayingMovies(MainActivity.API_KEY, "ru", 1)
+        nowPlayingMoviesCall.enqueue(object : Callback<MoviesResponse> {
+            override fun onResponse(
+                call: Call<MoviesResponse>,
+                response: Response<MoviesResponse>
+            ) {
+                val movies = response.body()?.results
+                val nowPlayingMovie = listOf(
+                    movies?.let {
+                        MainCardContainer(
+                            R.string.recommended,
+                            it.map { movie ->
+                                MovieItem(movie) {
+                                    openMovieDetails(movie)
+                                }
+                            })
+                    }
+                )
+                binding.moviesRecyclerView.adapter = adapter.apply { addAll(nowPlayingMovie) }
+            }
+
+            override fun onFailure(call: Call<MoviesResponse>, error: Throwable) {
+                Timber.e(error)
+            }
+        })
+    }
+
+    private fun showUpcomingMovies() {
+        val upcomingMoviesCall =
+            MovieApiClient.apiClient.getUpcomingMovies(MainActivity.API_KEY, "ru", 1)
+        upcomingMoviesCall.enqueue(object : Callback<MoviesResponse> {
+            override fun onResponse(
+                call: Call<MoviesResponse>,
+                response: Response<MoviesResponse>
+            ) {
+                val movies = response.body()?.results
+                val upcomingMovies = listOf(
+                    movies?.let {
+                        MainCardContainer(
+                            R.string.upcoming,
+                            it.map { movie ->
+                                MovieItem(movie) {
+                                    openMovieDetails(movie)
+                                }
+                            }
                         )
                     }
-                }.toList()
-            )
-        )
+                )
+                binding.moviesRecyclerView.adapter = adapter.apply { addAll(upcomingMovies) }
+            }
 
-        binding.moviesRecyclerView.adapter = adapter.apply { addAll(moviesList) }
+            override fun onFailure(call: Call<MoviesResponse>, error: Throwable) {
+                Timber.e(error)
+            }
 
-        // Используя Мок-репозиторий получаем фэйковый список фильмов
-        // Чтобы отобразить второй ряд фильмов
-        val newMoviesList = listOf(
-            MainCardContainer(
-                R.string.upcoming,
-                MockRepository.getMovies().map {
-                    MovieItem(it) { movie ->
-                        openMovieDetails(movie)
+        })
+    }
+
+    private fun showPopularMovies() {
+        val popularMoviesCall =
+            MovieApiClient.apiClient.getPopularMovies(MainActivity.API_KEY, "ru", 1)
+        popularMoviesCall.enqueue(object : Callback<MoviesResponse> {
+            override fun onResponse(
+                call: Call<MoviesResponse>,
+                response: Response<MoviesResponse>
+            ) {
+                val movies = response.body()?.results
+                val popularMovies = listOf(
+                    movies?.let {
+                        MainCardContainer(
+                            R.string.popular,
+                            it.map { movie ->
+                                MovieItem(movie) {
+                                    openMovieDetails(movie)
+                                }
+                            }
+                        )
                     }
-                }.toList()
-            )
-        )
+                )
+                binding.moviesRecyclerView.adapter = adapter.apply { addAll(popularMovies) }
+            }
 
-        adapter.apply { addAll(newMoviesList) }
+            override fun onFailure(call: Call<MoviesResponse>, error: Throwable) {
+                Timber.e(error)
+            }
+
+        })
     }
 
     private fun openMovieDetails(movie: Movie) {
         val bundle = Bundle()
-        bundle.putSerializable(KEY_MOVIE, movie)
+        bundle.putParcelable(KEY_MOVIE, movie)
         findNavController().navigate(R.id.movie_details_fragment, bundle, options)
     }
 
@@ -106,6 +174,7 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
     override fun onStop() {
         super.onStop()
         searchBinding.searchToolbar.clear()
+        adapter.clear()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

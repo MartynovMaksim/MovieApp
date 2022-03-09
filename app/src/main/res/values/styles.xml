@@ -28,4 +28,20 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
+
+    <style name="detailsDescription">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="detailMainDescription" parent="detailsDescription">
+        <item name="android:layout_width">70dp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="detailContentDescription" parent="detailsDescription">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textColor">@color/textColorGrey</item>
+    </style>
 </resources>

@@ -13,9 +13,14 @@ object MovieApiClient {
     private val interceptor =
         HttpLoggingInterceptor(CustomHttpLogging()).setLevel(HttpLoggingInterceptor.Level.BODY)
 
-    private var client: OkHttpClient = OkHttpClient.Builder()
-        .addInterceptor(interceptor)
-        .build()
+    private var client: OkHttpClient = if (BuildConfig.BUILD_TYPE != "release") {
+        OkHttpClient.Builder()
+            .addInterceptor(interceptor)
+            .build()
+    } else {
+        OkHttpClient.Builder()
+            .build()
+    }
 
     val apiClient: MovieApiInterface by lazy {
 

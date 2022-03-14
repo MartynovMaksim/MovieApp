@@ -29,7 +29,7 @@ data class Movie(
 ) : Parcelable {
     @SerializedName("poster_path")
     var posterPath: String? = null
-        get() = "${BuildConfig.IMAGE_BASE_URL}$field"
+        get() = """${BuildConfig.IMAGE_BASE_URL}/w500$field"""
 
     @SerializedName("vote_average")
     var voteAverage: Float? = null

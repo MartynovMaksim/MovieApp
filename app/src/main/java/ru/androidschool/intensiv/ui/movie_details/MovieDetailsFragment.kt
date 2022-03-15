@@ -37,7 +37,7 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
 
     private fun setDetailsForMovie(movie: Movie) {
         with(movie) {
-            binding.movieRating.rating = voteAverage?.div(2) ?: 0F
+            binding.movieRating.rating = voteAverage ?: 0F
             binding.detailsTitle.text = title
             binding.overview.text = overview
             binding.detailsImage.loadImageForDetailsFragment(posterPath)
@@ -46,7 +46,7 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
 
     private fun setDetailsForTvShow(tvShow: TvShow) {
         with(tvShow) {
-            binding.movieRating.rating = voteAverage?.div(2) ?: 0F
+            binding.movieRating.rating = voteAverage ?: 0F
             binding.detailsTitle.text = name
             binding.overview.text = overview
             binding.detailsImage.loadImageForDetailsFragment(posterPath)

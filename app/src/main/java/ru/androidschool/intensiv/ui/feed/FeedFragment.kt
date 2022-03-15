@@ -2,23 +2,21 @@ package ru.androidschool.intensiv.ui.feed
 
 import android.os.Bundle
 import android.view.*
+import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import ru.androidschool.intensiv.MainActivity
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.Movie
-import ru.androidschool.intensiv.data.MovieMock
 import ru.androidschool.intensiv.data.MoviesResponse
 import ru.androidschool.intensiv.databinding.FeedFragmentBinding
 import ru.androidschool.intensiv.databinding.FeedHeaderBinding
 import ru.androidschool.intensiv.network.MovieApiClient
-import ru.androidschool.intensiv.ui.afterTextChanged
+import ru.androidschool.intensiv.utils.setSchedulersForShowcaseRequest
 import timber.log.Timber
 
 class FeedFragment : Fragment(R.layout.feed_fragment) {
@@ -44,6 +42,8 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
         }
     }
 
+    private val disposables: CompositeDisposable = CompositeDisposable()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -57,106 +57,67 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        searchBinding.searchToolbar.binding.searchEditText.afterTextChanged {
-            Timber.d(it.toString())
-            if (it.toString().length > MIN_LENGTH) {
-                openSearch(it.toString())
-            }
+        observeMovieSearching()
+
+        if (adapter.itemCount == 0) {
+            showNowPlayingMovies()
+            showUpcomingMovies()
+            showPopularMovies()
         }
-        showNowPlayingMovies()
-        showUpcomingMovies()
-        showPopularMovies()
     }
 
     private fun showNowPlayingMovies() {
-        val nowPlayingMoviesCall =
-            MovieApiClient.apiClient.getNowPlayingMovies(MainActivity.API_KEY, "ru", 1)
-        nowPlayingMoviesCall.enqueue(object : Callback<MoviesResponse> {
-            override fun onResponse(
-                call: Call<MoviesResponse>,
-                response: Response<MoviesResponse>
-            ) {
-                val movies = response.body()?.results
-                val nowPlayingMovie = listOf(
-                    movies?.let {
-                        MainCardContainer(
-                            R.string.recommended,
-                            it.map { movie ->
-                                MovieItem(movie) {
-                                    openMovieDetails(movie)
-                                }
-                            })
-                    }
-                )
-                binding.moviesRecyclerView.adapter = adapter.apply { addAll(nowPlayingMovie) }
-            }
-
-            override fun onFailure(call: Call<MoviesResponse>, error: Throwable) {
-                Timber.e(error)
-            }
-        })
+        disposables += MovieApiClient.apiClient.getNowPlayingMovies()
+            .setSchedulersForShowcaseRequest()
+            .subscribe({ moviesResponse ->
+                addMoviesResponseToAdapter(moviesResponse, R.string.recommended)
+            }, {
+                Timber.tag(TAG).e(it)
+            })
     }
 
     private fun showUpcomingMovies() {
-        val upcomingMoviesCall =
-            MovieApiClient.apiClient.getUpcomingMovies(MainActivity.API_KEY, "ru", 1)
-        upcomingMoviesCall.enqueue(object : Callback<MoviesResponse> {
-            override fun onResponse(
-                call: Call<MoviesResponse>,
-                response: Response<MoviesResponse>
-            ) {
-                val movies = response.body()?.results
-                val upcomingMovies = listOf(
-                    movies?.let {
-                        MainCardContainer(
-                            R.string.upcoming,
-                            it.map { movie ->
-                                MovieItem(movie) {
-                                    openMovieDetails(movie)
-                                }
-                            }
-                        )
-                    }
-                )
-                binding.moviesRecyclerView.adapter = adapter.apply { addAll(upcomingMovies) }
-            }
-
-            override fun onFailure(call: Call<MoviesResponse>, error: Throwable) {
-                Timber.e(error)
-            }
-
-        })
+        disposables += MovieApiClient.apiClient.getUpcomingMovies()
+            .setSchedulersForShowcaseRequest()
+            .subscribe({ moviesResponse ->
+                addMoviesResponseToAdapter(moviesResponse, R.string.upcoming)
+            }, {
+                Timber.tag(TAG).e(it)
+            })
     }
 
     private fun showPopularMovies() {
-        val popularMoviesCall =
-            MovieApiClient.apiClient.getPopularMovies(MainActivity.API_KEY, "ru", 1)
-        popularMoviesCall.enqueue(object : Callback<MoviesResponse> {
-            override fun onResponse(
-                call: Call<MoviesResponse>,
-                response: Response<MoviesResponse>
-            ) {
-                val movies = response.body()?.results
-                val popularMovies = listOf(
-                    movies?.let {
-                        MainCardContainer(
-                            R.string.popular,
-                            it.map { movie ->
-                                MovieItem(movie) {
-                                    openMovieDetails(movie)
-                                }
-                            }
-                        )
+        disposables += MovieApiClient.apiClient.getPopularMovies()
+            .setSchedulersForShowcaseRequest()
+            .subscribe({ moviesResponse ->
+                addMoviesResponseToAdapter(moviesResponse, R.string.popular)
+            }, {
+                Timber.tag(TAG).e(it)
+            })
+    }
+
+    private fun observeMovieSearching() {
+        disposables += searchBinding.searchToolbar.doSearch()
+            .subscribe({
+                openSearch(it)
+            }, {
+                Timber.tag(TAG).e(it)
+            })
+    }
+
+    private fun addMoviesResponseToAdapter(moviesResponse: MoviesResponse, @StringRes title: Int) {
+        val movies = moviesResponse.results
+        val popularMovies = listOf(
+            MainCardContainer(
+                title,
+                movies.map { movie ->
+                    MovieItem(movie) {
+                        openMovieDetails(movie)
                     }
-                )
-                binding.moviesRecyclerView.adapter = adapter.apply { addAll(popularMovies) }
-            }
-
-            override fun onFailure(call: Call<MoviesResponse>, error: Throwable) {
-                Timber.e(error)
-            }
-
-        })
+                }
+            )
+        )
+        binding.moviesRecyclerView.adapter = adapter.apply { addAll(popularMovies) }
     }
 
     private fun openMovieDetails(movie: Movie) {
@@ -174,22 +135,26 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
     override fun onStop() {
         super.onStop()
         searchBinding.searchToolbar.clear()
-        adapter.clear()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.main_menu, menu)
     }
 
+    override fun onResume() {
+        super.onResume()
+        binding.moviesRecyclerView.adapter = adapter
+    }
+
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
         _searchBinding = null
+        disposables.clear()
+        super.onDestroyView()
     }
 
     companion object {
-        const val MIN_LENGTH = 3
-        const val KEY_TITLE = "title"
+        const val TAG = "FeedFragment"
         const val KEY_SEARCH = "search"
         const val KEY_MOVIE = "movie"
     }

@@ -9,15 +9,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import ru.androidschool.intensiv.MainActivity
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.TvShow
-import ru.androidschool.intensiv.data.TvShowsResponse
 import ru.androidschool.intensiv.databinding.TvShowsFragmentBinding
 import ru.androidschool.intensiv.network.MovieApiClient
+import ru.androidschool.intensiv.utils.setSchedulersForShowcaseRequest
 import timber.log.Timber
 
 class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
@@ -33,6 +31,8 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
             popExit = R.anim.slide_out_right
         }
     }
+
+    private val disposables: CompositeDisposable = CompositeDisposable()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,33 +50,21 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
     }
 
     private fun showPopularTvShows() {
-        val popularTvShowsCall =
-            MovieApiClient.apiClient.getPopularTvShow(MainActivity.API_KEY, "ru", 1)
-        popularTvShowsCall.enqueue(object : Callback<TvShowsResponse> {
-            override fun onResponse(
-                call: Call<TvShowsResponse>,
-                response: Response<TvShowsResponse>
-            ) {
-                val tvShows = response.body()?.results
-                val popularTvShows = tvShows?.let {
-                    it.map { tvShow ->
-                        TvShowItem(tvShow) {
-                            openTvShowDetails(tvShow)
-                        }
+        disposables += MovieApiClient.apiClient.getPopularTvShow()
+            .setSchedulersForShowcaseRequest()
+            .subscribe({ tvResponse ->
+                val tvShows = tvResponse.results
+                val popularTvShows = tvShows.map { tvShow ->
+                    TvShowItem(tvShow) {
+                        openTvShowDetails(tvShow)
                     }
                 }
                 binding.tvShowRecyclerView.adapter = GroupAdapter<GroupieViewHolder>().apply {
-                    if (popularTvShows != null) {
-                        addAll(popularTvShows)
-                    }
+                    addAll(popularTvShows)
                 }
-            }
-
-            override fun onFailure(call: Call<TvShowsResponse>, error: Throwable) {
-                Timber.e(error)
-            }
-
-        })
+            }, {
+                Timber.tag(TAG).e(it)
+            })
     }
 
     private fun openTvShowDetails(tvShow: TvShow) {
@@ -86,11 +74,13 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        disposables.clear()
+        super.onDestroyView()
     }
 
     companion object {
+        const val TAG = "TvShowsFragment"
         const val KEY_TV = "tv_show"
     }
 }

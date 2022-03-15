@@ -6,14 +6,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
 import androidx.core.view.isVisible
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.databinding.SearchToolbarBinding
+import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 class SearchBar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : FrameLayout(context, attrs, defStyle) {
+
+    companion object {
+        private const val MIN_LENGTH = 3
+    }
 
     lateinit var binding: SearchToolbarBinding
 
@@ -37,6 +45,17 @@ class SearchBar @JvmOverloads constructor(
     fun clear() {
         binding.searchEditText.setText("")
     }
+
+    fun doSearch(): Observable<String> = Observable.create<String> { emitter ->
+        binding.searchEditText.afterTextChanged {
+            Timber.tag("SearchBar").d(it.toString())
+            emitter.onNext(it.toString())
+        }
+    }
+        .filter { it.length > MIN_LENGTH }
+        .map { it.trim() }
+        .debounce(500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
 
     override fun onFinishInflate() {
         super.onFinishInflate()

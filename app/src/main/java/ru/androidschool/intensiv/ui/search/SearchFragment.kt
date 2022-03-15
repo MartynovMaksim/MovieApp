@@ -72,20 +72,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     }
 
     private fun observeMovieSearching() {
-        val observableForSearch = Observable.create<String> { emitter ->
-            searchBinding.searchToolbar.binding.searchEditText.afterTextChanged {
-                Timber.tag(TAG).d(it.toString())
-                if (it?.trim().toString().length > MIN_LENGTH) {
-                    emitter.onNext(it.toString())
-                }
-                if (it.isNullOrBlank()) {
-                    adapter.clear()
-                }
-            }
-        }
-        disposables += observableForSearch
-            .subscribeOn(AndroidSchedulers.mainThread())
-            .debounce(500, TimeUnit.MILLISECONDS)
+        disposables += searchBinding.searchToolbar.doSearch()
             .subscribe({
                 searchMovie(it)
             }, {
@@ -104,6 +91,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
                         openMovieDetails(movie)
                     }
                 }
+                adapter.clear()
                 binding.moviesRecyclerView.adapter = adapter.apply {
                     addAll(searchedMovies)
                 }
@@ -130,7 +118,6 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
     companion object {
         const val TAG = "SearchFragment"
-        const val MIN_LENGTH = 3
         const val KEY_MOVIE = "movie"
     }
 }

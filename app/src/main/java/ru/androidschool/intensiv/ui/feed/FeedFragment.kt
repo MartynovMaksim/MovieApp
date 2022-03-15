@@ -8,7 +8,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -19,9 +18,7 @@ import ru.androidschool.intensiv.data.MoviesResponse
 import ru.androidschool.intensiv.databinding.FeedFragmentBinding
 import ru.androidschool.intensiv.databinding.FeedHeaderBinding
 import ru.androidschool.intensiv.network.MovieApiClient
-import ru.androidschool.intensiv.ui.afterTextChanged
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 class FeedFragment : Fragment(R.layout.feed_fragment) {
 
@@ -102,17 +99,7 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
     }
 
     private fun observeMovieSearching() {
-        val observableForSearch = Observable.create<String> { emitter ->
-            searchBinding.searchToolbar.binding.searchEditText.afterTextChanged {
-                Timber.tag(TAG).d(it.toString())
-                if (it?.trim().toString().length > MIN_LENGTH) {
-                    emitter.onNext(it.toString())
-                }
-            }
-        }
-        disposables += observableForSearch
-            .subscribeOn(AndroidSchedulers.mainThread())
-            .debounce(500, TimeUnit.MILLISECONDS)
+        disposables += searchBinding.searchToolbar.doSearch()
             .subscribe({
                 openSearch(it)
             }, {
@@ -170,7 +157,6 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
 
     companion object {
         const val TAG = "FeedFragment"
-        const val MIN_LENGTH = 3
         const val KEY_SEARCH = "search"
         const val KEY_MOVIE = "movie"
     }

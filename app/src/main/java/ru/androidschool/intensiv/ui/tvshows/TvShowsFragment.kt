@@ -74,8 +74,9 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        disposables.clear()
+        super.onDestroyView()
     }
 
     companion object {

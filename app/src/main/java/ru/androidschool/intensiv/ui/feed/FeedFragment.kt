@@ -59,9 +59,11 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
 
         observeMovieSearching()
 
-        showNowPlayingMovies()
-        showUpcomingMovies()
-        showPopularMovies()
+        if (adapter.itemCount == 0) {
+            showNowPlayingMovies()
+            showUpcomingMovies()
+            showPopularMovies()
+        }
     }
 
     private fun showNowPlayingMovies() {
@@ -147,7 +149,7 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
     override fun onDestroyView() {
         _binding = null
         _searchBinding = null
-        disposables.dispose()
+        disposables.clear()
         super.onDestroyView()
     }
 

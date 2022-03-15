@@ -104,7 +104,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     }
 
     override fun onDestroyView() {
-        disposables.dispose()
+        disposables.clear()
         _binding = null
         _searchBinding = null
         super.onDestroyView()

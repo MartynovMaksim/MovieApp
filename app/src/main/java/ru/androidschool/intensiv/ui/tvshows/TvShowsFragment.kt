@@ -9,15 +9,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.schedulers.Schedulers
-import ru.androidschool.intensiv.MainActivity
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.TvShow
 import ru.androidschool.intensiv.databinding.TvShowsFragmentBinding
 import ru.androidschool.intensiv.network.MovieApiClient
+import ru.androidschool.intensiv.utils.setSchedulersForShowcaseRequest
 import timber.log.Timber
 
 class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
@@ -53,8 +51,7 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
 
     private fun showPopularTvShows() {
         disposables += MovieApiClient.apiClient.getPopularTvShow()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            .setSchedulersForShowcaseRequest()
             .subscribe({ tvResponse ->
                 val tvShows = tvResponse.results
                 val popularTvShows = tvShows.map { tvShow ->

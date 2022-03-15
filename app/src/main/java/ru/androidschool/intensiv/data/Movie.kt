@@ -33,5 +33,6 @@ data class Movie(
 
     @SerializedName("vote_average")
     var voteAverage: Float? = null
-        get() = field?.div(2)
+        // Value's range is 0..10. We divide this value by 2 because for AppCompatRatingBar set 5 stars
+        get() = field?.div(2) ?: 0F
 }

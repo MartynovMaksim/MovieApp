@@ -8,6 +8,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import ru.androidschool.intensiv.R
@@ -60,40 +61,8 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
         observeMovieSearching()
 
         if (adapter.itemCount == 0) {
-            showNowPlayingMovies()
-            showUpcomingMovies()
-            showPopularMovies()
+            getShowcases()
         }
-    }
-
-    private fun showNowPlayingMovies() {
-        disposables += MovieApiClient.apiClient.getNowPlayingMovies()
-            .setSchedulersForShowcaseRequest()
-            .subscribe({ moviesResponse ->
-                addMoviesResponseToAdapter(moviesResponse, R.string.recommended)
-            }, {
-                Timber.tag(TAG).e(it)
-            })
-    }
-
-    private fun showUpcomingMovies() {
-        disposables += MovieApiClient.apiClient.getUpcomingMovies()
-            .setSchedulersForShowcaseRequest()
-            .subscribe({ moviesResponse ->
-                addMoviesResponseToAdapter(moviesResponse, R.string.upcoming)
-            }, {
-                Timber.tag(TAG).e(it)
-            })
-    }
-
-    private fun showPopularMovies() {
-        disposables += MovieApiClient.apiClient.getPopularMovies()
-            .setSchedulersForShowcaseRequest()
-            .subscribe({ moviesResponse ->
-                addMoviesResponseToAdapter(moviesResponse, R.string.popular)
-            }, {
-                Timber.tag(TAG).e(it)
-            })
     }
 
     private fun observeMovieSearching() {
@@ -105,9 +74,36 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
             })
     }
 
-    private fun addMoviesResponseToAdapter(moviesResponse: MoviesResponse, @StringRes title: Int) {
+    private fun getShowcases() {
+        val nowPlayingMovies = MovieApiClient.apiClient.getNowPlayingMovies()
+        val upcomingMovies = MovieApiClient.apiClient.getUpcomingMovies()
+        val popularMovies = MovieApiClient.apiClient.getPopularMovies()
+
+        disposables += Single.zip(
+            nowPlayingMovies, upcomingMovies, popularMovies
+        ) { nowPlaying, upcoming, popular ->
+            listOf(
+                (createListOfMainCardContainer(nowPlaying, R.string.recommended)),
+                (createListOfMainCardContainer(popular, R.string.popular)),
+                (createListOfMainCardContainer(upcoming, R.string.upcoming))
+            )
+        }
+            .setSchedulersForShowcaseRequest()
+            .subscribe({ list ->
+                list.forEach {
+                    binding.moviesRecyclerView.adapter = adapter.apply { addAll(it) }
+                }
+            }, {
+                Timber.tag(TAG).e(it)
+            })
+    }
+
+    private fun createListOfMainCardContainer(
+        moviesResponse: MoviesResponse,
+        @StringRes title: Int
+    ): List<MainCardContainer> {
         val movies = moviesResponse.results
-        val popularMovies = listOf(
+        return listOf(
             MainCardContainer(
                 title,
                 movies.map { movie ->
@@ -117,7 +113,6 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
                 }
             )
         )
-        binding.moviesRecyclerView.adapter = adapter.apply { addAll(popularMovies) }
     }
 
     private fun openMovieDetails(movie: Movie) {

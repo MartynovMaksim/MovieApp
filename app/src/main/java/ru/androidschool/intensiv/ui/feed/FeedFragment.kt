@@ -18,6 +18,7 @@ import ru.androidschool.intensiv.databinding.FeedFragmentBinding
 import ru.androidschool.intensiv.databinding.FeedHeaderBinding
 import ru.androidschool.intensiv.network.MovieApiClient
 import ru.androidschool.intensiv.utils.setSchedulersForShowcaseRequest
+import ru.androidschool.intensiv.utils.showAndHideView
 import timber.log.Timber
 
 class FeedFragment : Fragment(R.layout.feed_fragment) {
@@ -61,7 +62,7 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
         observeMovieSearching()
 
         if (adapter.itemCount == 0) {
-            getShowcases()
+            observeShowcases()
         }
     }
 
@@ -74,13 +75,12 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
             })
     }
 
-    private fun getShowcases() {
-        val nowPlayingMovies = MovieApiClient.apiClient.getNowPlayingMovies()
-        val upcomingMovies = MovieApiClient.apiClient.getUpcomingMovies()
-        val popularMovies = MovieApiClient.apiClient.getPopularMovies()
+    private fun observeShowcases() {
 
         disposables += Single.zip(
-            nowPlayingMovies, upcomingMovies, popularMovies
+            MovieApiClient.apiClient.getNowPlayingMovies(),
+            MovieApiClient.apiClient.getUpcomingMovies(),
+            MovieApiClient.apiClient.getPopularMovies()
         ) { nowPlaying, upcoming, popular ->
             listOf(
                 (createListOfMainCardContainer(nowPlaying, R.string.recommended)),
@@ -89,6 +89,7 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
             )
         }
             .setSchedulersForShowcaseRequest()
+            .showAndHideView(binding.progressBar)
             .subscribe({ list ->
                 list.forEach {
                     binding.moviesRecyclerView.adapter = adapter.apply { addAll(it) }

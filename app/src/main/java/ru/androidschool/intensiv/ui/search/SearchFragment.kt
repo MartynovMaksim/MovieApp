@@ -19,6 +19,7 @@ import ru.androidschool.intensiv.network.MovieApiClient
 import ru.androidschool.intensiv.ui.feed.FeedFragment.Companion.KEY_SEARCH
 import ru.androidschool.intensiv.ui.feed.MovieItem
 import ru.androidschool.intensiv.utils.setSchedulersForShowcaseRequest
+import ru.androidschool.intensiv.utils.showAndHideView
 import timber.log.Timber
 
 class SearchFragment : Fragment(R.layout.fragment_search) {
@@ -78,6 +79,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     private fun searchMovie(query: String) {
         disposables += MovieApiClient.apiClient.getSearchResult(query = query)
             .setSchedulersForShowcaseRequest()
+            .showAndHideView(binding.progressBar)
             .subscribe { movieResponse ->
                 val movies = movieResponse.results
                 val searchedMovies = movies.map { movie ->

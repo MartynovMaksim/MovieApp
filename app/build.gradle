@@ -8,6 +8,7 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 apply plugin: 'kotlin-parcelize'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 32
@@ -91,4 +92,13 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
     implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
     implementation "io.reactivex.rxjava2:rxkotlin:$rxKotlin2Version"
+
+    // Room
+    implementation "androidx.room:room-runtime:$roomVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
+
+    // RxJava support for Room
+    implementation "androidx.room:room-rxjava2:$roomVersion"
+    implementation "android.arch.persistence.room:rxjava2:$roomRxJavaVersion"
+    implementation "io.reactivex.rxjava2:rxandroid:$rxJavaRxAndroidVersion"
 }

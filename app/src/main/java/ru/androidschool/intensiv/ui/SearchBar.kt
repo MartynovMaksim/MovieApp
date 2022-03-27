@@ -51,7 +51,6 @@ class SearchBar @JvmOverloads constructor(
             Timber.tag("SearchBar").d(it.toString())
             subject
                 .onNext(it.toString())
-
         }
         return subject
     }
@@ -76,5 +75,4 @@ class SearchBar @JvmOverloads constructor(
             }
         }
     }
-
 }

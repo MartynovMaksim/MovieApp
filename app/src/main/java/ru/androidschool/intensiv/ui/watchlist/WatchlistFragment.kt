@@ -5,11 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.navOptions
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
-import ru.androidschool.intensiv.data.MockRepository
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
+import ru.androidschool.intensiv.R
+import ru.androidschool.intensiv.data.Movie
+import ru.androidschool.intensiv.database.MovieDatabase
+import ru.androidschool.intensiv.database.MovieEntity
 import ru.androidschool.intensiv.databinding.FragmentWatchlistBinding
+import ru.androidschool.intensiv.utils.setSchedulersFromIoToMainThread
 
 class WatchlistFragment : Fragment() {
 
@@ -21,6 +28,21 @@ class WatchlistFragment : Fragment() {
 
     private val adapter by lazy {
         GroupAdapter<GroupieViewHolder>()
+    }
+
+    private val movieDao by lazy {
+        MovieDatabase.get(requireContext()).movieDao()
+    }
+
+    private val disposables = CompositeDisposable()
+
+    private val options = navOptions {
+        anim {
+            enter = R.anim.slide_in_right
+            exit = R.anim.slide_out_left
+            popEnter = R.anim.slide_in_left
+            popExit = R.anim.slide_out_right
+        }
     }
 
     override fun onCreateView(
@@ -35,26 +57,52 @@ class WatchlistFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.moviesRecyclerView.layoutManager = GridLayoutManager(context, 4)
-        binding.moviesRecyclerView.adapter = adapter.apply { addAll(listOf()) }
+        setFavoriteMoviesToWatchList()
+    }
 
-        val moviesList =
-            MockRepository.getMovies().map {
-                MoviePreviewItem(
-                    it
-                ) { movie -> }
-            }.toList()
+    private fun setFavoriteMoviesToWatchList() {
+        disposables += movieDao.getMovies()
+            .setSchedulersFromIoToMainThread()
+            .doOnSubscribe {
+                binding.progressBar.visibility = View.VISIBLE
+            }
+            .subscribe {
+                val favoriteMovies = it.map { movieEntity ->
+                    val movie = convertDbEntityToDto(movieEntity)
+                    MoviePreviewItem(movie) {
+                        openMovieDetails(movie)
+                    }
+                }
+                binding.moviesRecyclerView.adapter = adapter.apply {
+                    binding.progressBar.visibility = View.GONE
+                    addAll(favoriteMovies)
+                }
+            }
+    }
 
-        binding.moviesRecyclerView.adapter = adapter.apply { addAll(moviesList) }
+    private fun convertDbEntityToDto(entity: MovieEntity) = Movie(
+        null, null, null, null, null,
+        null, null, null, null, null, null, null
+    ).apply {
+        posterPath = entity.posterPath
+        voteAverage = null
+    }
+
+    private fun openMovieDetails(movie: Movie) {
+        val bundle = Bundle()
+        bundle.putParcelable(KEY_MOVIE, movie)
+        findNavController().navigate(R.id.movie_details_fragment, bundle, options)
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        disposables.clear()
+        super.onDestroyView()
     }
 
     companion object {
         @JvmStatic
         fun newInstance() = WatchlistFragment()
+        const val KEY_MOVIE = "movie"
     }
 }

@@ -15,7 +15,7 @@ import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.TvShow
 import ru.androidschool.intensiv.databinding.TvShowsFragmentBinding
 import ru.androidschool.intensiv.network.MovieApiClient
-import ru.androidschool.intensiv.utils.setSchedulersForShowcaseRequest
+import ru.androidschool.intensiv.utils.setSchedulersFromIoToMainThread
 import ru.androidschool.intensiv.utils.showAndHideView
 import timber.log.Timber
 
@@ -52,7 +52,7 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
 
     private fun showPopularTvShows() {
         disposables += MovieApiClient.apiClient.getPopularTvShow()
-            .setSchedulersForShowcaseRequest()
+            .setSchedulersFromIoToMainThread()
             .showAndHideView(binding.progressBar)
             .subscribe({ tvResponse ->
                 val tvShows = tvResponse.results

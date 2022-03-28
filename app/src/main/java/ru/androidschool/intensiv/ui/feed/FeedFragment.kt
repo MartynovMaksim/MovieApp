@@ -12,17 +12,15 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.schedulers.Schedulers
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.Movie
 import ru.androidschool.intensiv.data.MoviesResponse
 import ru.androidschool.intensiv.database.MovieDao
 import ru.androidschool.intensiv.database.MovieDatabase
-import ru.androidschool.intensiv.database.MovieEntity
 import ru.androidschool.intensiv.databinding.FeedFragmentBinding
 import ru.androidschool.intensiv.databinding.FeedHeaderBinding
 import ru.androidschool.intensiv.network.MovieApiClient
-import ru.androidschool.intensiv.utils.setSchedulersForShowcaseRequest
+import ru.androidschool.intensiv.utils.setSchedulersFromIoToMainThread
 import ru.androidschool.intensiv.utils.showAndHideView
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -102,7 +100,7 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
                 (createListOfMainCardContainer(upcoming, R.string.upcoming))
             )
         }
-            .setSchedulersForShowcaseRequest()
+            .setSchedulersFromIoToMainThread()
             .showAndHideView(binding.progressBar)
             .subscribe({ list ->
                 list.forEach {
@@ -118,10 +116,6 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
         @StringRes title: Int
     ): List<MainCardContainer> {
         val movies = moviesResponse.results
-        val movieEntity = convertMovie(movies)
-        movieDao.save(movieEntity)
-            .subscribeOn(Schedulers.io())
-            .subscribe()
         return listOf(
             MainCardContainer(
                 title,
@@ -132,12 +126,6 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
                 }
             )
         )
-    }
-
-    private fun convertMovie(listDto: List<Movie>): List<MovieEntity> {
-        return listDto.flatMap {
-            listOf(MovieEntity(title = it.title))
-        }
     }
 
     private fun openMovieDetails(movie: Movie) {

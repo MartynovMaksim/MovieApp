@@ -47,10 +47,10 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
         movie?.let { setDetailsForMovie(it) }
         tvShow?.let { setDetailsForTvShow(it) }
 
-        binding.favorite.setOnClickListener { view ->
+        binding.favorite.setOnClickListener {
             val movieEntity = convertMovieToDbEntity(requireNotNull(movie))
-            if (view is CheckBox) {
-                if (view.isChecked) {
+            if (it is CheckBox) {
+                if (it.isChecked) {
                     movieDao.save(movieEntity).setCompletableToDbCall(TAG)
                 } else {
                     movieDao.delete(movieEntity).setCompletableToDbCall(TAG)
@@ -79,11 +79,24 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     }
 
     private fun convertMovieToDbEntity(movieDto: Movie): MovieEntity =
-        MovieEntity(
-            movieId = movieDto.id,
-            title = movieDto.title,
-            posterPath = movieDto.posterPath
-        )
+        with(movieDto) {
+            MovieEntity(
+                movieId = id,
+                title = title,
+                posterPath = posterPath,
+                isAdult = isAdult,
+                backdropPath = backdropPath,
+                genreIds = genreIds,
+                originalLanguage = originalLanguage,
+                originalTitle = originalTitle,
+                overview = overview,
+                popularity = popularity,
+                releaseDate = releaseDate,
+                video = video,
+                voteCount = voteCount,
+                voteAverage = voteAverage
+            )
+        }
 
     private fun checkMovieInFavorite() {
         disposables += movieDao.getMovie(requireNotNull(arguments?.getParcelable<Movie>("movie")?.id))

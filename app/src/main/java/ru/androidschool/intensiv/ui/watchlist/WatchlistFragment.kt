@@ -17,6 +17,7 @@ import ru.androidschool.intensiv.database.MovieDatabase
 import ru.androidschool.intensiv.database.MovieEntity
 import ru.androidschool.intensiv.databinding.FragmentWatchlistBinding
 import ru.androidschool.intensiv.utils.setSchedulersFromIoToMainThread
+import timber.log.Timber
 
 class WatchlistFragment : Fragment() {
 
@@ -66,7 +67,7 @@ class WatchlistFragment : Fragment() {
             .doOnSubscribe {
                 binding.progressBar.visibility = View.VISIBLE
             }
-            .subscribe {
+            .subscribe({
                 val favoriteMovies = it.map { movieEntity ->
                     val movie = convertDbEntityToDto(movieEntity)
                     MoviePreviewItem(movie) {
@@ -77,15 +78,27 @@ class WatchlistFragment : Fragment() {
                     binding.progressBar.visibility = View.GONE
                     addAll(favoriteMovies)
                 }
-            }
+            }, {
+                Timber.tag(TAG).e(it)
+            })
     }
 
     private fun convertDbEntityToDto(entity: MovieEntity) = Movie(
-        null, null, null, null, null,
-        null, null, null, null, null, null, null
+        entity.isAdult,
+        entity.backdropPath,
+        entity.genreIds,
+        entity.movieId,
+        entity.originalLanguage,
+        entity.originalTitle,
+        entity.overview,
+        entity.popularity,
+        entity.releaseDate,
+        entity.title,
+        entity.video,
+        entity.voteCount
     ).apply {
         posterPath = entity.posterPath
-        voteAverage = null
+        voteAverage = entity.voteAverage?.times(2F)
     }
 
     private fun openMovieDetails(movie: Movie) {
@@ -103,6 +116,7 @@ class WatchlistFragment : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance() = WatchlistFragment()
-        const val KEY_MOVIE = "movie"
+        const val TAG = "WatchlistFragment"
+        private const val KEY_MOVIE = "movie"
     }
 }

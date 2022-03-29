@@ -68,6 +68,8 @@ class WatchlistFragment : Fragment() {
                 binding.progressBar.visibility = View.VISIBLE
             }
             .subscribe({
+                adapter.clear()
+
                 val favoriteMovies = it.map { movieEntity ->
                     val movie = convertDbEntityToDto(movieEntity)
                     MoviePreviewItem(movie) {

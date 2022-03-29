@@ -21,7 +21,7 @@ data class TvShow(
     @SerializedName("original_language")
     val originalLanguage: String?,
     @SerializedName("vote_count")
-    val VoteCount: Int?,
+    val voteCount: Int?,
     val name: String?,
     @SerializedName("original_name")
     val originalName: String?

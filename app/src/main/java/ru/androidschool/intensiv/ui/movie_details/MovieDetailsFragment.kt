@@ -11,9 +11,7 @@ import io.reactivex.rxkotlin.plusAssign
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.Movie
 import ru.androidschool.intensiv.data.TvShow
-import ru.androidschool.intensiv.database.MovieDao
-import ru.androidschool.intensiv.database.MovieDatabase
-import ru.androidschool.intensiv.database.MovieEntity
+import ru.androidschool.intensiv.database.*
 import ru.androidschool.intensiv.databinding.MovieDetailsFragmentBinding
 import ru.androidschool.intensiv.utils.loadImageForDetailsFragment
 import ru.androidschool.intensiv.utils.setCompletableToDbCall
@@ -27,7 +25,19 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
 
     private val disposables = CompositeDisposable()
 
-    private lateinit var movieDao: MovieDao
+    private val movieDao: MovieDao by lazy {
+        MovieDatabase.get(requireContext()).movieDao()
+    }
+    private val tvShowDao: TvShowDao by lazy {
+        MovieDatabase.get(requireContext()).tvShowDao()
+    }
+
+    private val movie: Movie? by lazy {
+        arguments?.getParcelable("movie")
+    }
+    private val tvShow: TvShow? by lazy {
+        arguments?.getParcelable("tv_show")
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,20 +50,28 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val movie = arguments?.getParcelable<Movie>("movie")
-        val tvShow = arguments?.getParcelable<TvShow>("tv_show")
-        movieDao = MovieDatabase.get(requireContext()).movieDao()
 
         movie?.let { setDetailsForMovie(it) }
         tvShow?.let { setDetailsForTvShow(it) }
 
         binding.favorite.setOnClickListener {
-            val movieEntity = convertMovieToDbEntity(requireNotNull(movie))
-            if (it is CheckBox) {
-                if (it.isChecked) {
-                    movieDao.save(movieEntity).setCompletableToDbCall(TAG)
-                } else {
-                    movieDao.delete(movieEntity).setCompletableToDbCall(TAG)
+            if (movie != null) {
+                val movieEntity = convertMovieToDbEntity(requireNotNull(movie))
+                if (it is CheckBox) {
+                    if (it.isChecked) {
+                        movieDao.save(movieEntity).setCompletableToDbCall(TAG)
+                    } else {
+                        movieDao.delete(movieEntity).setCompletableToDbCall(TAG)
+                    }
+                }
+            } else if (tvShow != null) {
+                val tvShowEntity = convertTvShowToDbEntity(requireNotNull(tvShow))
+                if (it is CheckBox) {
+                    if (it.isChecked) {
+                        tvShowDao.save(tvShowEntity).setCompletableToDbCall(TAG)
+                    } else {
+                        tvShowDao.delete(tvShowEntity).setCompletableToDbCall(TAG)
+                    }
                 }
             }
         }
@@ -98,8 +116,37 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
             )
         }
 
-    private fun checkMovieInFavorite() {
-        disposables += movieDao.getMovie(requireNotNull(arguments?.getParcelable<Movie>("movie")?.id))
+    private fun convertTvShowToDbEntity(tvShowDto: TvShow): TvShowEntity =
+        with(tvShowDto) {
+            TvShowEntity(
+                tvShowId = id,
+                name = name,
+                posterPath = posterPath,
+                backdropPath = backdropPath,
+                genreIds = genreIds,
+                originalLanguage = originalLanguage,
+                originalName = originalName,
+                overview = overview,
+                popularity = popularity,
+                firstAirDate = firstAirDate,
+                originCountries = originCountries,
+                voteCount = voteCount,
+                voteAverage = voteAverage
+            )
+        }
+
+    private fun checkMovieInFavorite(movie: Movie) {
+        disposables += movieDao.getMovie(requireNotNull(movie.id))
+            .setSchedulersFromIoToMainThread()
+            .subscribe({
+                binding.favorite.isChecked = true
+            }, {
+                Timber.tag(TAG).e(it)
+            })
+    }
+
+    private fun checkTvShowInFavorite(tvShow: TvShow) {
+        disposables += tvShowDao.getTvShow(requireNotNull(tvShow.id))
             .setSchedulersFromIoToMainThread()
             .subscribe({
                 binding.favorite.isChecked = true
@@ -110,7 +157,8 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
 
     override fun onResume() {
         super.onResume()
-        checkMovieInFavorite()
+        movie?.let { checkMovieInFavorite(it) }
+        tvShow?.let { checkTvShowInFavorite(it) }
     }
 
     override fun onDestroyView() {

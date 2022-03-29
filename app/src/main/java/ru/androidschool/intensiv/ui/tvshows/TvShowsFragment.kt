@@ -83,6 +83,6 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
 
     companion object {
         const val TAG = "TvShowsFragment"
-        const val KEY_TV = "tv_show"
+        private const val KEY_TV = "tv_show"
     }
 }

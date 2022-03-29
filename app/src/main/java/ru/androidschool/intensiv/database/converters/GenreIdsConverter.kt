@@ -1,4 +1,4 @@
-package ru.androidschool.intensiv.database
+package ru.androidschool.intensiv.database.converters
 
 import androidx.room.TypeConverter
 
@@ -7,7 +7,7 @@ class GenreIdsConverter {
         @TypeConverter
         @JvmStatic
         fun genreIdsToString(genreIds: MutableList<Int>?): String? =
-            genreIds?.map { it }?.joinToString(separator = ",")
+            genreIds?.joinToString(separator = ",")
 
         @TypeConverter
         @JvmStatic

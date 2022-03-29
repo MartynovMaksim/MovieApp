@@ -22,4 +22,7 @@ interface TvShowDao {
 
     @Query("SELECT * FROM TvShows WHERE tvShowId = :id")
     fun getTvShow(id: Int): Single<TvShowEntity>
+
+    @Query("SELECT COUNT(*) FROM TvShows ")
+    fun getTvShowCount(): Single<Int>
 }

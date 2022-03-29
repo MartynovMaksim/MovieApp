@@ -22,4 +22,7 @@ interface MovieDao {
 
     @Query("SELECT * FROM Movies WHERE movieId = :id")
     fun getMovie(id: Int): Single<MovieEntity>
+
+    @Query("SELECT COUNT(*) FROM Movies ")
+    fun getMoviesCount(): Single<Int>
 }

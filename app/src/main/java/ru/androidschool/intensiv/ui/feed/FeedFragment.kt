@@ -9,7 +9,6 @@ import androidx.navigation.navOptions
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import ru.androidschool.intensiv.R
@@ -23,7 +22,6 @@ import ru.androidschool.intensiv.network.MovieApiClient
 import ru.androidschool.intensiv.utils.setSchedulersFromIoToMainThread
 import ru.androidschool.intensiv.utils.showAndHideView
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 class FeedFragment : Fragment(R.layout.feed_fragment) {
 
@@ -76,10 +74,6 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
 
     private fun observeMovieSearching() {
         disposables += searchBinding.searchToolbar.doSearch()
-            .filter { it.length > 3 }
-            .map { it.trim() }
-            .debounce(500, TimeUnit.MILLISECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 openSearch(it)
             }, {
@@ -94,17 +88,24 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
             MovieApiClient.apiClient.getUpcomingMovies(),
             MovieApiClient.apiClient.getPopularMovies()
         ) { nowPlaying, upcoming, popular ->
-            listOf(
-                (createListOfMainCardContainer(nowPlaying, R.string.recommended)),
-                (createListOfMainCardContainer(popular, R.string.popular)),
-                (createListOfMainCardContainer(upcoming, R.string.upcoming))
+            hashMapOf(
+                ("recommended" to (createListOfMainCardContainer(
+                    nowPlaying,
+                    R.string.recommended
+                ))),
+                ("popular" to (createListOfMainCardContainer(
+                    popular, R.string.popular
+                ))),
+                ("upcoming" to (createListOfMainCardContainer(
+                    upcoming, R.string.upcoming
+                )))
             )
         }
             .setSchedulersFromIoToMainThread()
             .showAndHideView(binding.progressBar)
             .subscribe({ list ->
                 list.forEach {
-                    binding.moviesRecyclerView.adapter = adapter.apply { addAll(it) }
+                    binding.moviesRecyclerView.adapter = adapter.apply { addAll(it.value) }
                 }
             }, {
                 Timber.tag(TAG).e(it)

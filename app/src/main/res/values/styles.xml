@@ -44,4 +44,22 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:textColor">@color/textColorGrey</item>
     </style>
+
+    <style name="progressBarStyleForContent" parent="Widget.AppCompat.ProgressBar">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">84dp</item>
+        <item name="android:indeterminate">true</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="progressBarStyleWithMargin" parent="progressBarStyleForContent">
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">84dp</item>
+    </style>
+
+    <style name="progressBarStyleWithoutMargin" parent="progressBarStyleForContent">
+        <item name="android:layout_gravity">center</item>
+    </style>
 </resources>

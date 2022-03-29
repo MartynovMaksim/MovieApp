@@ -8,6 +8,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import ru.androidschool.intensiv.R
@@ -17,7 +19,9 @@ import ru.androidschool.intensiv.databinding.FeedFragmentBinding
 import ru.androidschool.intensiv.databinding.FeedHeaderBinding
 import ru.androidschool.intensiv.network.MovieApiClient
 import ru.androidschool.intensiv.utils.setSchedulersForShowcaseRequest
+import ru.androidschool.intensiv.utils.showAndHideView
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 class FeedFragment : Fragment(R.layout.feed_fragment) {
 
@@ -60,44 +64,16 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
         observeMovieSearching()
 
         if (adapter.itemCount == 0) {
-            showNowPlayingMovies()
-            showUpcomingMovies()
-            showPopularMovies()
+            observeShowcases()
         }
-    }
-
-    private fun showNowPlayingMovies() {
-        disposables += MovieApiClient.apiClient.getNowPlayingMovies()
-            .setSchedulersForShowcaseRequest()
-            .subscribe({ moviesResponse ->
-                addMoviesResponseToAdapter(moviesResponse, R.string.recommended)
-            }, {
-                Timber.tag(TAG).e(it)
-            })
-    }
-
-    private fun showUpcomingMovies() {
-        disposables += MovieApiClient.apiClient.getUpcomingMovies()
-            .setSchedulersForShowcaseRequest()
-            .subscribe({ moviesResponse ->
-                addMoviesResponseToAdapter(moviesResponse, R.string.upcoming)
-            }, {
-                Timber.tag(TAG).e(it)
-            })
-    }
-
-    private fun showPopularMovies() {
-        disposables += MovieApiClient.apiClient.getPopularMovies()
-            .setSchedulersForShowcaseRequest()
-            .subscribe({ moviesResponse ->
-                addMoviesResponseToAdapter(moviesResponse, R.string.popular)
-            }, {
-                Timber.tag(TAG).e(it)
-            })
     }
 
     private fun observeMovieSearching() {
         disposables += searchBinding.searchToolbar.doSearch()
+            .filter { it.length > 3 }
+            .map { it.trim() }
+            .debounce(500, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 openSearch(it)
             }, {
@@ -105,9 +81,36 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
             })
     }
 
-    private fun addMoviesResponseToAdapter(moviesResponse: MoviesResponse, @StringRes title: Int) {
+    private fun observeShowcases() {
+
+        disposables += Single.zip(
+            MovieApiClient.apiClient.getNowPlayingMovies(),
+            MovieApiClient.apiClient.getUpcomingMovies(),
+            MovieApiClient.apiClient.getPopularMovies()
+        ) { nowPlaying, upcoming, popular ->
+            listOf(
+                (createListOfMainCardContainer(nowPlaying, R.string.recommended)),
+                (createListOfMainCardContainer(popular, R.string.popular)),
+                (createListOfMainCardContainer(upcoming, R.string.upcoming))
+            )
+        }
+            .setSchedulersForShowcaseRequest()
+            .showAndHideView(binding.progressBar)
+            .subscribe({ list ->
+                list.forEach {
+                    binding.moviesRecyclerView.adapter = adapter.apply { addAll(it) }
+                }
+            }, {
+                Timber.tag(TAG).e(it)
+            })
+    }
+
+    private fun createListOfMainCardContainer(
+        moviesResponse: MoviesResponse,
+        @StringRes title: Int
+    ): List<MainCardContainer> {
         val movies = moviesResponse.results
-        val popularMovies = listOf(
+        return listOf(
             MainCardContainer(
                 title,
                 movies.map { movie ->
@@ -117,7 +120,6 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
                 }
             )
         )
-        binding.moviesRecyclerView.adapter = adapter.apply { addAll(popularMovies) }
     }
 
     private fun openMovieDetails(movie: Movie) {

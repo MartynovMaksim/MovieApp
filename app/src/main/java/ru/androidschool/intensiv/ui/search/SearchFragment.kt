@@ -9,20 +9,19 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
+import ru.androidschool.intensiv.MainActivity.Companion.KEY_MOVIE
+import ru.androidschool.intensiv.MainActivity.Companion.KEY_SEARCH
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.Movie
 import ru.androidschool.intensiv.databinding.FeedHeaderBinding
 import ru.androidschool.intensiv.databinding.FragmentSearchBinding
 import ru.androidschool.intensiv.network.MovieApiClient
-import ru.androidschool.intensiv.ui.feed.FeedFragment.Companion.KEY_SEARCH
 import ru.androidschool.intensiv.ui.feed.MovieItem
-import ru.androidschool.intensiv.utils.setSchedulersForShowcaseRequest
+import ru.androidschool.intensiv.utils.setSchedulersFromIoToMainThread
 import ru.androidschool.intensiv.utils.showAndHideView
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 class SearchFragment : Fragment(R.layout.fragment_search) {
 
@@ -71,10 +70,6 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
     private fun observeMovieSearching() {
         disposables += searchBinding.searchToolbar.doSearch()
-            .filter { it.length > 3 }
-            .map { it.trim() }
-            .debounce(500, TimeUnit.MILLISECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 searchMovie(it)
             }, {
@@ -84,7 +79,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
     private fun searchMovie(query: String) {
         disposables += MovieApiClient.apiClient.getSearchResult(query = query)
-            .setSchedulersForShowcaseRequest()
+            .setSchedulersFromIoToMainThread()
             .showAndHideView(binding.progressBar)
             .subscribe { movieResponse ->
                 val movies = movieResponse.results
@@ -120,6 +115,5 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
     companion object {
         const val TAG = "SearchFragment"
-        const val KEY_MOVIE = "movie"
     }
 }

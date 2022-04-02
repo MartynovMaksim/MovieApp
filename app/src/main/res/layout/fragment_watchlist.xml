@@ -14,5 +14,10 @@
         android:paddingTop="@dimen/material_margin_large"
         android:scrollbars="vertical"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="4"
         tools:listitem="@layout/item_small" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="@style/progressBarStyleWithMargin" />
 </FrameLayout>

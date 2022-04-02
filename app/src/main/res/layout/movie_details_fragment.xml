@@ -60,12 +60,12 @@
                     android:textStyle="bold"
                     tools:text="Мир дикого запада" />
 
-                <ImageView
-                    android:id="@+id/like"
+                <CheckBox
+                    android:id="@+id/favorite"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_empty_hearth"
-                    tools:ignore="ContentDescription" />
+                    android:button="@drawable/bg_checkbox_favorite_movie"
+                    android:checked="false" />
             </LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout

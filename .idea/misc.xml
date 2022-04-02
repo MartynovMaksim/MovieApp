@@ -6,7 +6,10 @@
         <entry key="../../../../layout/custom_preview.xml" value="0.34615384615384615" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1935" />
         <entry key="app/src/main/res/drawable/bg_bottom_rounded_16dp.xml" value="0.19497705078125" />
+        <entry key="app/src/main/res/drawable/bg_checkbox_favorite_movie.xml" value="0.1505" />
         <entry key="app/src/main/res/drawable/ic_arrow_back.xml" value="0.1935" />
+        <entry key="app/src/main/res/drawable/ic_empty_hearth.xml" value="0.1665" />
+        <entry key="app/src/main/res/drawable/ic_filled_heart.xml" value="0.1505" />
         <entry key="app/src/main/res/drawable/ic_movies.xml" value="0.1935" />
         <entry key="app/src/main/res/drawable/ic_unfavorite.xml" value="0.1935" />
         <entry key="app/src/main/res/drawable/ic_wave.xml" value="0.1935" />

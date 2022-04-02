@@ -11,9 +11,17 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import com.squareup.picasso.Picasso
+import io.reactivex.Single
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import jp.wasabeef.picasso.transformations.CropCircleTransformation
 import ru.androidschool.intensiv.R
+import ru.androidschool.intensiv.database.MovieDao
+import ru.androidschool.intensiv.database.MovieDatabase
+import ru.androidschool.intensiv.database.TvShowDao
 import ru.androidschool.intensiv.databinding.FragmentProfileBinding
+import ru.androidschool.intensiv.utils.setSchedulersFromIoToMainThread
+import timber.log.Timber
 
 class ProfileFragment : Fragment() {
 
@@ -24,6 +32,15 @@ class ProfileFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+    private val movieDao: MovieDao by lazy {
+        MovieDatabase.get(requireContext()).movieDao()
+    }
+    private val tvShowDao: TvShowDao by lazy {
+        MovieDatabase.get(requireContext()).tvShowDao()
+    }
+
+    private val disposables: CompositeDisposable = CompositeDisposable()
 
     private var profilePageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
@@ -66,22 +83,44 @@ class ProfileFragment : Fragment() {
         )
 
         TabLayoutMediator(binding.tabLayout, binding.profileViewPager) { tab, position ->
-
-            // Выделение первой части заголовка таба
-            // Название таба
-            val title = profileTabLayoutTitles[position]
-            // Раздеряем название на части. Первый элемент будет кол-во
-            val parts = profileTabLayoutTitles[position].split(" ")
-            val number = parts[0]
-            val spannableStringTitle = SpannableString(title)
-            spannableStringTitle.setSpan(RelativeSizeSpan(2f), 0, number.count(), 0)
-
-            tab.text = spannableStringTitle
+            disposables += Single.zip(
+                movieDao.getMoviesCount(),
+                tvShowDao.getTvShowCount()
+            ) { moviesCount, tvShowsCount ->
+                moviesCount + tvShowsCount
+            }
+                .setSchedulersFromIoToMainThread()
+                .subscribe({
+                    val spannableStringTitle = if (position == 0) {
+                        SpannableString("${it}\n ${getString(R.string.liked)}").apply {
+                            setSpan(
+                                RelativeSizeSpan(2f),
+                                0,
+                                it.toString().count(),
+                                0
+                            )
+                        }
+                    } else {
+                        SpannableString(getString(R.string.later)).apply {
+                            setSpan(
+                                RelativeSizeSpan(2f),
+                                0, 2, 0
+                            )
+                        }
+                    }
+                    tab.text = spannableStringTitle
+                }, {
+                    Timber.tag(TAG).e(it)
+                })
         }.attach()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        const val TAG = "ProfileFragment"
     }
 }

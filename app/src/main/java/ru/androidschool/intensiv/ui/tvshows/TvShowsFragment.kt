@@ -11,11 +11,12 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
+import ru.androidschool.intensiv.MainActivity.Companion.KEY_TV
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.TvShow
 import ru.androidschool.intensiv.databinding.TvShowsFragmentBinding
 import ru.androidschool.intensiv.network.MovieApiClient
-import ru.androidschool.intensiv.utils.setSchedulersForShowcaseRequest
+import ru.androidschool.intensiv.utils.setSchedulersFromIoToMainThread
 import ru.androidschool.intensiv.utils.showAndHideView
 import timber.log.Timber
 
@@ -52,7 +53,7 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
 
     private fun showPopularTvShows() {
         disposables += MovieApiClient.apiClient.getPopularTvShow()
-            .setSchedulersForShowcaseRequest()
+            .setSchedulersFromIoToMainThread()
             .showAndHideView(binding.progressBar)
             .subscribe({ tvResponse ->
                 val tvShows = tvResponse.results
@@ -83,6 +84,5 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
 
     companion object {
         const val TAG = "TvShowsFragment"
-        const val KEY_TV = "tv_show"
     }
 }

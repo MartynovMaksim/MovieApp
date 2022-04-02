@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import ru.androidschool.intensiv.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -14,6 +13,9 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private val TAG = MainActivity::class.java.simpleName
         const val API_KEY = BuildConfig.THE_MOVIE_DATABASE_API
+        const val KEY_MOVIE = "movie"
+        const val KEY_TV = "tv_show"
+        const val KEY_SEARCH = "search"
     }
 
     private lateinit var binding: ActivityMainBinding

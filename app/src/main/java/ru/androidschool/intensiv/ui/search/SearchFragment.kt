@@ -11,12 +11,13 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
+import ru.androidschool.intensiv.MainActivity.Companion.KEY_MOVIE
+import ru.androidschool.intensiv.MainActivity.Companion.KEY_SEARCH
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.Movie
 import ru.androidschool.intensiv.databinding.FeedHeaderBinding
 import ru.androidschool.intensiv.databinding.FragmentSearchBinding
 import ru.androidschool.intensiv.network.MovieApiClient
-import ru.androidschool.intensiv.ui.feed.FeedFragment.Companion.KEY_SEARCH
 import ru.androidschool.intensiv.ui.feed.MovieItem
 import ru.androidschool.intensiv.utils.setSchedulersFromIoToMainThread
 import ru.androidschool.intensiv.utils.showAndHideView
@@ -114,6 +115,5 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
     companion object {
         const val TAG = "SearchFragment"
-        const val KEY_MOVIE = "movie"
     }
 }

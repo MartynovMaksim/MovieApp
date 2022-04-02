@@ -11,6 +11,7 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
+import ru.androidschool.intensiv.MainActivity.Companion.KEY_TV
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.TvShow
 import ru.androidschool.intensiv.databinding.TvShowsFragmentBinding
@@ -83,6 +84,5 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
 
     companion object {
         const val TAG = "TvShowsFragment"
-        private const val KEY_TV = "tv_show"
     }
 }

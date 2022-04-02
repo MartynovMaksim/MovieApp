@@ -11,6 +11,8 @@ import com.xwray.groupie.GroupieViewHolder
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
+import ru.androidschool.intensiv.MainActivity.Companion.KEY_MOVIE
+import ru.androidschool.intensiv.MainActivity.Companion.KEY_SEARCH
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.Movie
 import ru.androidschool.intensiv.data.MoviesResponse
@@ -171,7 +173,5 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
 
     companion object {
         const val TAG = "FeedFragment"
-        const val KEY_SEARCH = "search"
-        const val KEY_MOVIE = "movie"
     }
 }

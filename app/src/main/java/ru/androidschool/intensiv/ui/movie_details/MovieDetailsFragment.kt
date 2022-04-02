@@ -8,6 +8,8 @@ import android.widget.CheckBox
 import androidx.fragment.app.Fragment
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
+import ru.androidschool.intensiv.MainActivity.Companion.KEY_MOVIE
+import ru.androidschool.intensiv.MainActivity.Companion.KEY_TV
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.Movie
 import ru.androidschool.intensiv.data.TvShow
@@ -33,10 +35,10 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     }
 
     private val movie: Movie? by lazy {
-        arguments?.getParcelable("movie")
+        arguments?.getParcelable(KEY_MOVIE)
     }
     private val tvShow: TvShow? by lazy {
-        arguments?.getParcelable("tv_show")
+        arguments?.getParcelable(KEY_TV)
     }
 
     override fun onCreateView(

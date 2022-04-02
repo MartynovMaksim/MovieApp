@@ -13,6 +13,8 @@ import ru.androidschool.intensiv.MainActivity.Companion.KEY_TV
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.Movie
 import ru.androidschool.intensiv.data.TvShow
+import ru.androidschool.intensiv.data.mapper.MovieMapper
+import ru.androidschool.intensiv.data.mapper.TvShowMapper
 import ru.androidschool.intensiv.database.*
 import ru.androidschool.intensiv.databinding.MovieDetailsFragmentBinding
 import ru.androidschool.intensiv.utils.loadImageForDetailsFragment
@@ -58,7 +60,7 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
 
         binding.favorite.setOnClickListener {
             if (movie != null) {
-                val movieEntity = convertMovieToDbEntity(requireNotNull(movie))
+                val movieEntity = MovieMapper.toEntity(requireNotNull(movie))
                 if (it is CheckBox) {
                     if (it.isChecked) {
                         movieDao.save(movieEntity).setCompletableToDbCall(TAG)
@@ -67,7 +69,7 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
                     }
                 }
             } else if (tvShow != null) {
-                val tvShowEntity = convertTvShowToDbEntity(requireNotNull(tvShow))
+                val tvShowEntity = TvShowMapper.toEntity(requireNotNull(tvShow))
                 if (it is CheckBox) {
                     if (it.isChecked) {
                         tvShowDao.save(tvShowEntity).setCompletableToDbCall(TAG)
@@ -97,45 +99,6 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
             binding.detailsImage.loadImageForDetailsFragment(posterPath)
         }
     }
-
-    private fun convertMovieToDbEntity(movieDto: Movie): MovieEntity =
-        with(movieDto) {
-            MovieEntity(
-                movieId = id,
-                title = title,
-                posterPath = posterPath,
-                isAdult = isAdult,
-                backdropPath = backdropPath,
-                genreIds = genreIds,
-                originalLanguage = originalLanguage,
-                originalTitle = originalTitle,
-                overview = overview,
-                popularity = popularity,
-                releaseDate = releaseDate,
-                video = video,
-                voteCount = voteCount,
-                voteAverage = voteAverage
-            )
-        }
-
-    private fun convertTvShowToDbEntity(tvShowDto: TvShow): TvShowEntity =
-        with(tvShowDto) {
-            TvShowEntity(
-                tvShowId = id,
-                name = name,
-                posterPath = posterPath,
-                backdropPath = backdropPath,
-                genreIds = genreIds,
-                originalLanguage = originalLanguage,
-                originalName = originalName,
-                overview = overview,
-                popularity = popularity,
-                firstAirDate = firstAirDate,
-                originCountries = originCountries,
-                voteCount = voteCount,
-                voteAverage = voteAverage
-            )
-        }
 
     private fun checkMovieInFavorite(movie: Movie) {
         disposables += movieDao.getMovie(requireNotNull(movie.id))

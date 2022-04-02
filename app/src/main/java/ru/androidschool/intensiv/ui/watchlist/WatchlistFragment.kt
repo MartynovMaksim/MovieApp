@@ -17,9 +17,9 @@ import ru.androidschool.intensiv.MainActivity.Companion.KEY_TV
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.Movie
 import ru.androidschool.intensiv.data.TvShow
+import ru.androidschool.intensiv.data.mapper.MovieMapper
+import ru.androidschool.intensiv.data.mapper.TvShowMapper
 import ru.androidschool.intensiv.database.MovieDatabase
-import ru.androidschool.intensiv.database.MovieEntity
-import ru.androidschool.intensiv.database.TvShowEntity
 import ru.androidschool.intensiv.databinding.FragmentWatchlistBinding
 import ru.androidschool.intensiv.utils.setSchedulersFromIoToMainThread
 import timber.log.Timber
@@ -75,13 +75,13 @@ class WatchlistFragment : Fragment() {
             tvShowDao.getTvShows()
         ) { movies, tvShows ->
             val favoriteMovies = movies.map { movieEntity ->
-                val movie = convertMovieEntityToDto(movieEntity)
+                val movie = MovieMapper.toData(movieEntity)
                 MoviePreviewItem(movie) {
                     openMovieDetails(movie)
                 }
             }
             val favoriteTvShows = tvShows.map { tvShowEntity ->
-                val tvShow = convertTvShowEntityToDto(tvShowEntity)
+                val tvShow = TvShowMapper.toData(tvShowEntity)
                 TvShowPreviewItem(tvShow) {
                     openTvShowDetails(tvShow)
                 }
@@ -104,64 +104,6 @@ class WatchlistFragment : Fragment() {
             }, {
                 Timber.tag(TAG).e(it)
             })
-
-
-        disposables += movieDao.getMovies()
-            .setSchedulersFromIoToMainThread()
-            .doOnSubscribe {
-                binding.progressBar.visibility = View.VISIBLE
-            }
-            .subscribe({
-                adapter.clear()
-
-                val favoriteMovies = it.map { movieEntity ->
-                    val movie = convertMovieEntityToDto(movieEntity)
-                    MoviePreviewItem(movie) {
-                        openMovieDetails(movie)
-                    }
-                }
-                binding.moviesRecyclerView.adapter = adapter.apply {
-                    binding.progressBar.visibility = View.GONE
-                    addAll(favoriteMovies)
-                }
-            }, {
-                Timber.tag(TAG).e(it)
-            })
-    }
-
-    private fun convertMovieEntityToDto(entity: MovieEntity) = Movie(
-        entity.isAdult,
-        entity.backdropPath,
-        entity.genreIds,
-        entity.movieId,
-        entity.originalLanguage,
-        entity.originalTitle,
-        entity.overview,
-        entity.popularity,
-        entity.releaseDate,
-        entity.title,
-        entity.video,
-        entity.voteCount
-    ).apply {
-        posterPath = entity.posterPath
-        voteAverage = entity.voteAverage?.times(2F)
-    }
-
-    private fun convertTvShowEntityToDto(entity: TvShowEntity) = TvShow(
-        entity.popularity,
-        entity.tvShowId,
-        entity.backdropPath,
-        entity.overview,
-        entity.firstAirDate,
-        entity.originCountries,
-        entity.genreIds,
-        entity.originalLanguage,
-        entity.voteCount,
-        entity.name,
-        entity.originalName
-    ).apply {
-        posterPath = entity.posterPath
-        voteAverage = entity.voteAverage?.times(2F)
     }
 
     private fun openMovieDetails(movie: Movie) {

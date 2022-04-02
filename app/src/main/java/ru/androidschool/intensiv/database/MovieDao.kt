@@ -5,7 +5,6 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import io.reactivex.Completable
-import io.reactivex.Observable
 import io.reactivex.Single
 
 @Dao
@@ -18,7 +17,7 @@ interface MovieDao {
     fun delete(movieEntity: MovieEntity): Completable
 
     @Query("SELECT * FROM Movies")
-    fun getMovies(): Observable<List<MovieEntity>>
+    fun getMovies(): Single<List<MovieEntity>>
 
     @Query("SELECT * FROM Movies WHERE movieId = :id")
     fun getMovie(id: Int): Single<MovieEntity>

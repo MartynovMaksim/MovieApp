@@ -9,7 +9,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
-import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import ru.androidschool.intensiv.R
@@ -68,7 +68,7 @@ class WatchlistFragment : Fragment() {
     }
 
     private fun setFavoriteMoviesToWatchList() {
-        disposables += Observable.zip(
+        disposables += Single.zip(
             movieDao.getMovies(),
             tvShowDao.getTvShows()
         ) { movies, tvShows ->

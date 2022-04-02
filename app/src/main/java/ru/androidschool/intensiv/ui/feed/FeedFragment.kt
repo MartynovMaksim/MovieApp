@@ -89,14 +89,14 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
             MovieApiClient.apiClient.getPopularMovies()
         ) { nowPlaying, upcoming, popular ->
             hashMapOf(
-                ("recommended" to (createListOfMainCardContainer(
+                (MovieCategories.RECOMMENDED.category to (createListOfMainCardContainer(
                     nowPlaying,
                     R.string.recommended
                 ))),
-                ("popular" to (createListOfMainCardContainer(
+                (MovieCategories.POPULAR.category to (createListOfMainCardContainer(
                     popular, R.string.popular
                 ))),
-                ("upcoming" to (createListOfMainCardContainer(
+                (MovieCategories.UPCOMING.category to (createListOfMainCardContainer(
                     upcoming, R.string.upcoming
                 )))
             )
@@ -161,6 +161,13 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
         disposables.clear()
         super.onDestroyView()
     }
+
+    private enum class MovieCategories(val category: String) {
+        RECOMMENDED("recommended"),
+        POPULAR("popular"),
+        UPCOMING("upcoming")
+    }
+
 
     companion object {
         const val TAG = "FeedFragment"

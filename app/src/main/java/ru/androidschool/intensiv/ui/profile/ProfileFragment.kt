@@ -92,7 +92,7 @@ class ProfileFragment : Fragment() {
                 .setSchedulersFromIoToMainThread()
                 .subscribe({
                     val spannableStringTitle = if (position == 0) {
-                        SpannableString("${it}\n Понравилось").apply {
+                        SpannableString("${it}\n ${getString(R.string.liked)}").apply {
                             setSpan(
                                 RelativeSizeSpan(2f),
                                 0,
